@@ -16,6 +16,18 @@ desafio. Full-Scan puro foi descartado por não escalar para esses documentos, e
 Chunking Semântico completo (árvores hierárquicas/RAG) foi descartado pelo
 trade-off de tempo de implementação dado o prazo de 1 dia.
 
+## Extração table-aware (Markdown)
+
+Para cada página selecionada, o conteúdo enviado à LLM não é o texto plano
+(`get_text()`), e sim **Markdown** gerado a partir das tabelas detectadas com
+`page.find_tables()` (PyMuPDF) mais o texto fora das tabelas. Os dados das
+Prévias são essencialmente tabulares (empresa × indicador); preservar o
+alinhamento linha/coluna em tabelas Markdown reduz erros de associação
+(empresa↔valor) e alucinação na extração, comparado ao texto achatado, onde
+colunas e linhas se misturam. O texto fora da área das tabelas é mantido (sem
+duplicar o que já está estruturado) para preservar cabeçalhos como o trimestre
+de referência.
+
 ## Status
 
 accepted

@@ -27,16 +27,18 @@ mesmo arquivo é ignorada.
 
 ## 4. Camada B — Contrato Semântico e Chunking
 
-`src/uda/prefilter.py` usa PyMuPDF (`fitz`) para extrair o texto de cada
-página do PDF (`extrair_texto_por_pagina`) e filtra páginas relevantes por
-palavras-chave (`pagina_relevante`, `PAGE_FILTER_KEYWORDS` em
-`src/uda/config.py`), conforme [ADR-0001](docs/adr/0001-pre-filtro-de-paginas-antes-da-llm.md).
-Apenas o texto das páginas selecionadas (não o PDF inteiro) é enviado ao
-Gemini.
+`src/uda/prefilter.py` usa PyMuPDF (`fitz`) para selecionar as páginas
+relevantes por palavras-chave (`pagina_relevante`, `PAGE_FILTER_KEYWORDS` em
+`src/uda/config.py`) e, para cada página selecionada, gera **Markdown** das
+tabelas (`find_tables()` → `pagina_para_markdown`) mais o texto fora delas,
+conforme [ADR-0001](docs/adr/0001-pre-filtro-de-paginas-antes-da-llm.md). Só
+esse Markdown (não o PDF como arquivo) é enviado ao Gemini; as tabelas em
+Markdown preservam o alinhamento empresa↔valor, reduzindo erros de associação.
 
-`src/uda/extraction.py` define `extrair_indicadores`, que envia esse texto ao
+`src/uda/extraction.py` define `extrair_indicadores`, que envia esse conteúdo ao
 modelo `gemini-2.5-flash` via `client.models.generate_content` com
-`response_schema=ExtracaoResultado` (ver [ADR-0002](docs/adr/0002-gemini-flash-com-saida-estruturada.md)).
+`response_schema=ExtracaoResultado`, `temperature=0.0` e `thinking_budget=0`
+(geração determinística — ver [ADR-0002](docs/adr/0002-gemini-flash-com-saida-estruturada.md)).
 O Contrato Semântico (`src/uda/schemas.py`) define `IndicadorExtraido`
 (`empresa`, `ano`, `trimestre` 1-4, `indicador` ∈ {`lancamentos`, `vendas`},
 `valor_absoluto`, `var_qoq`, `var_yoy`, `var_acumulado_aa`, todos opcionais e
@@ -44,6 +46,17 @@ O Contrato Semântico (`src/uda/schemas.py`) define `IndicadorExtraido`
 Testado com o PDF de exemplo real: 14 `IndicadorExtraido` retornados (7
 empresas/total × 2 indicadores), todos com `valor_absoluto=None` e percentuais
 conferindo com a tabela do PDF.
+
+Para PDFs **escaneados** (sem camada de texto), `processar_pdf` detecta a
+ausência de texto (`tem_camada_de_texto`) e recorre ao Gemini Vision
+(`extrair_indicadores_vision`), renderizando as páginas como imagem e usando o
+mesmo `response_schema` (ver [ADR-0006](docs/adr/0006-fallback-gemini-vision-para-pdfs-sem-texto.md)).
+
+Após a extração, `src/uda/validation.py` (`validar_indicadores`) faz a validação
+semântica pós-LLM: além dos tipos/ranges do Pydantic, registra avisos para
+linhas sem nenhum valor (provável alucinação), variações fora de faixa
+plausível, empresa vazia ou ano improvável — no princípio de não confiar 100%
+na saída da LLM.
 
 ## 5. Camada C — API REST
 
@@ -72,6 +85,9 @@ com cada indicador, permitindo rastrear de qual Prévia Operacional o dado veio.
 
 ## 8. Limitações conhecidas e próximos passos
 
-- Validação com 2º layout de Prévia Operacional ainda não realizada
-  (`fase::6` do backlog).
-- Gatilho de ingestão (polling) ainda não implementado.
+- Resiliência a PDFs escaneados coberta pelo fallback Gemini Vision
+  ([ADR-0006](docs/adr/0006-fallback-gemini-vision-para-pdfs-sem-texto.md)); a
+  validação contra uma Prévia real de 2º layout (`fase::6`) depende de obter um
+  documento adicional.
+- Gatilho de ingestão (polling) documentado, mas ainda não implementado
+  ([`docs/planning/ingestao-polling.md`](docs/planning/ingestao-polling.md)).

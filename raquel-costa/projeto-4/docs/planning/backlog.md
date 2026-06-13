@@ -171,7 +171,7 @@ PRD estar fechado.
 
 ---
 
-### [fase::6] [type::spike] [priority::p2] [status::todo] Validação com 2º layout de Prévia Operacional (pós-MVP)
+### [fase::6] [type::spike] [priority::p2] [status::doing] Validação com 2º layout de Prévia Operacional (pós-MVP)
 
 Buscar uma Prévia Operacional real em outro layout (ex: MRV RI, apresentação em
 slides), rodar o pipeline e documentar ajustes necessários para resiliência.
@@ -181,5 +181,31 @@ slides), rodar o pipeline e documentar ajustes necessários para resiliência.
   que não existir nesse layout).
 - Diferenças de comportamento (Pré-filtro, schema) documentadas.
 
+**Progresso (2026-06-13)**: mecanismos de resiliência implementados — extração
+table-aware (Markdown, ADR-0001) e fallback Gemini Vision para PDFs escaneados
+(ADR-0006). Falta rodar contra uma Prévia real de 2º layout para fechar o item
+(o download de um 2º PDF de teste ainda não foi concluído).
+
 **Blocked by**: fase::2, fase::3, fase::4 (pipeline ponta-a-ponta funcionando
 com o PDF de exemplo).
+
+---
+
+### [fase::6] [type::feature] [priority::p1] [status::done] Estratégias de robustez da extração
+
+Quatro estratégias para elevar qualidade/resiliência sobre o MVP validado.
+
+**Critérios de aceite:**
+- Extração table-aware: tabelas viram Markdown antes da LLM (ADR-0001). ✅
+- Geração determinística: `temperature=0.0` + `thinking_budget=0`. ✅
+- Validação semântica pós-LLM com warnings (`src/uda/validation.py`). ✅
+- Fallback Gemini Vision para PDFs sem camada de texto (ADR-0006). ✅
+
+**Resultado (2026-06-13)**: `prefilter.py` (Markdown via `find_tables()` +
+`tem_camada_de_texto`), `extraction.py` (config determinística +
+`extrair_indicadores_vision`), `validation.py` (novo) e `pipeline.py`
+(classificação texto/scan + validação). Re-validado e2e contra o PDF de
+exemplo: 14 indicadores conferindo com a tabela. 27 testes passando (novos em
+`tests/test_validation.py` e `tests/test_prefilter.py`).
+
+**Blocked by**: fase::2, fase::3, fase::4.

@@ -66,3 +66,29 @@ backlog, README e diagrama de arquitetura atualizados de "Gemini 2.0 Flash"
 para "Gemini 2.5 Flash". `.env.example` criado (`GEMINI_API_KEY=`), `.env`
 confirmado no `.gitignore`. Item "Gerar chave do Gemini" do backlog marcado
 como `status::done`.
+
+## 2026-06-13 — Estratégias de robustez da extração
+
+Definidas quatro estratégias para elevar a qualidade e a resiliência da
+extração, aplicadas sobre o MVP já validado:
+
+1. **Extração table-aware (ADR-0001 atualizado)**: o Pré-filtro passa a enviar
+   à LLM o **Markdown** das tabelas (PyMuPDF `find_tables()`) em vez de texto
+   plano, preservando o alinhamento empresa↔valor. Re-validado contra o PDF de
+   exemplo: os 14 indicadores conferem com a tabela de origem.
+2. **Geração determinística**: `temperature=0.0` e `thinking_budget=0` na
+   chamada ao Gemini, para reprodutibilidade e menor custo/latência numa tarefa
+   estruturada.
+3. **Validação semântica pós-LLM** (`src/uda/validation.py`): além dos tipos/
+   ranges do Pydantic, sinaliza (warnings) linhas suspeitas — sem nenhum valor
+   (provável alucinação), variação fora de faixa plausível, empresa vazia, ano
+   improvável. Princípio de não confiar 100% na saída da LLM.
+4. **Fallback Gemini Vision para PDFs escaneados (ADR-0006)**: se o PDF não tem
+   camada de texto, as páginas são renderizadas como imagem e enviadas ao Gemini
+   Vision com o mesmo `response_schema`. Fecha a resiliência da `fase::6` sem
+   stack de OCR pesado.
+
+Nota técnica: corrigido um bug de `"client has been closed"` na chamada ao
+Gemini — o `Client` era criado como objeto temporário (`_client().models...`) e
+coletado pelo GC antes de a requisição rodar na thread de retry do SDK; passou a
+manter referência forte local ao `Client` durante a chamada.
