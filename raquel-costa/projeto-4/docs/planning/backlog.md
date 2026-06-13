@@ -171,20 +171,24 @@ PRD estar fechado.
 
 ---
 
-### [fase::6] [type::spike] [priority::p2] [status::doing] Validação com 2º layout de Prévia Operacional (pós-MVP)
+### [fase::6] [type::spike] [priority::p2] [status::done] Validação com 2º layout de Prévia Operacional (pós-MVP)
 
 Buscar uma Prévia Operacional real em outro layout (ex: MRV RI, apresentação em
 slides), rodar o pipeline e documentar ajustes necessários para resiliência.
 
 **Critérios de aceite:**
-- PDF de outro layout processado com sucesso (mesmo que com campos NULL para o
+- PDF de outro layout processado com sucesso (mesmo que com campos NULL para o ✅
   que não existir nesse layout).
-- Diferenças de comportamento (Pré-filtro, schema) documentadas.
+- Diferenças de comportamento (Pré-filtro, schema) documentadas. ✅
 
-**Progresso (2026-06-13)**: mecanismos de resiliência implementados — extração
-table-aware (Markdown, ADR-0001) e fallback Gemini Vision para PDFs escaneados
-(ADR-0006). Falta rodar contra uma Prévia real de 2º layout para fechar o item
-(o download de um 2º PDF de teste ainda não foi concluído).
+**Resultado (2026-06-13)**: validado com a **Prévia Operacional 3T25 da Cyrela**
+(CYRE3) — comunicado de empresa única, em prosa + tabelas, com valores absolutos
+em R$ milhões (layout bem diferente do boletim agregado de exemplo). Pipeline
+rodou ponta-a-ponta (`processado`); desta vez `valor_absoluto` veio populado
+(R$ 5.050M / R$ 3.411M lançamentos, R$ 2.459M vendas), conferindo com o texto.
+Diferenças e recomendações (rótulo `TOTAL_SETOR` em doc de empresa única;
+variantes com/ex-permuta; falta de campo de unidade) documentadas em
+[`validacao-2-layout.md`](./validacao-2-layout.md).
 
 **Blocked by**: fase::2, fase::3, fase::4 (pipeline ponta-a-ponta funcionando
 com o PDF de exemplo).

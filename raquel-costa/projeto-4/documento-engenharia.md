@@ -85,9 +85,12 @@ com cada indicador, permitindo rastrear de qual Prévia Operacional o dado veio.
 
 ## 8. Limitações conhecidas e próximos passos
 
-- Resiliência a PDFs escaneados coberta pelo fallback Gemini Vision
-  ([ADR-0006](docs/adr/0006-fallback-gemini-vision-para-pdfs-sem-texto.md)); a
-  validação contra uma Prévia real de 2º layout (`fase::6`) depende de obter um
-  documento adicional.
+- Resiliência validada com um 2º layout real (Prévia 3T25 da Cyrela, empresa
+  única com valores absolutos): pipeline processou ponta-a-ponta e populou
+  `valor_absoluto`. Diferenças e melhorias recomendadas (rótulo de empresa em
+  docs de emissor único, variantes com/ex-permuta, campo de unidade) em
+  [`docs/planning/validacao-2-layout.md`](docs/planning/validacao-2-layout.md).
+- PDFs escaneados são cobertos pelo fallback Gemini Vision
+  ([ADR-0006](docs/adr/0006-fallback-gemini-vision-para-pdfs-sem-texto.md)).
 - Gatilho de ingestão (polling) documentado, mas ainda não implementado
   ([`docs/planning/ingestao-polling.md`](docs/planning/ingestao-polling.md)).

@@ -92,3 +92,15 @@ Nota técnica: corrigido um bug de `"client has been closed"` na chamada ao
 Gemini — o `Client` era criado como objeto temporário (`_client().models...`) e
 coletado pelo GC antes de a requisição rodar na thread de retry do SDK; passou a
 manter referência forte local ao `Client` durante a chamada.
+
+## 2026-06-13 — Validação com 2º layout (fase::6)
+
+Pipeline validado contra a Prévia Operacional 3T25 da **Cyrela** (CYRE3) —
+comunicado de empresa única, em prosa + tabelas, com valores absolutos em R$
+milhões (layout diferente do boletim agregado de exemplo, que só traz
+percentuais). Rodou ponta-a-ponta (`processado`), com `valor_absoluto`
+populado e conferindo com a fonte. Diferenças de comportamento (uso indevido de
+`TOTAL_SETOR` em doc de empresa única; variantes com/ex-permuta gerando linhas
+extras; ausência de campo de unidade) e recomendações registradas em
+[`validacao-2-layout.md`](./validacao-2-layout.md). `fase::6` marcada como
+`status::done`.
