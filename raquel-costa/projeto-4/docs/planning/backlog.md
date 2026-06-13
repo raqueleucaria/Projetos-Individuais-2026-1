@@ -48,7 +48,7 @@ do pipeline.
 
 ---
 
-### [fase::1] [type::feature] [priority::p0] [status::doing] Hash/idempotência + catálogo SQLite
+### [fase::1] [type::feature] [priority::p0] [status::done] Hash/idempotência + catálogo SQLite
 
 Função que calcula SHA-256 do PDF, consulta a tabela `relatorios` e decide se o
 arquivo deve ser processado ou ignorado.
@@ -61,17 +61,17 @@ arquivo deve ser processado ou ignorado.
 - Teste de integração: processar o mesmo PDF duas vezes não duplica chamadas à
   LLM (mockada) nem linhas em `indicadores`.
 
-**Progresso (2026-06-13)**: building blocks prontos em `src/uda/hashing.py`
-(`hash_arquivo`) e `src/uda/db.py` (`relatorio_existe`, `registrar_relatorio`),
-com testes em `tests/test_db.py`/`test_hashing.py`. Falta o script de
-orquestração (`fase::1` → `fase::2`) que decide processar/ignorar e o teste de
-integração "processar duas vezes".
+**Resultado (2026-06-13)**: `src/uda/pipeline.py` (`processar_pdf`) implementa a
+orquestração hash → checagem em `relatorios` → pré-filtro → extração →
+persistência. Testado contra o PDF de exemplo com a API real do Gemini:
+1ª chamada retorna `"processado"` (registra relatório + 14 indicadores), 2ª
+chamada com o mesmo PDF retorna `"ignorado"` sem nova chamada à LLM.
 
 **Blocked by**: fase::0 setup do projeto.
 
 ---
 
-### [fase::2] [type::feature] [priority::p0] [status::todo] Pré-filtro de páginas + extração via Gemini com Contrato Semântico
+### [fase::2] [type::feature] [priority::p0] [status::done] Pré-filtro de páginas + extração via Gemini com Contrato Semântico
 
 Extrai texto por página (PyMuPDF), seleciona páginas por palavras-chave
 (ADR-0001), monta prompt e chama Gemini 2.5 Flash com `response_schema` derivado
@@ -90,12 +90,20 @@ do Contrato Semântico (ADR-0002, ADR-0005).
 - Teste unitário do Contrato Semântico: fixture de resposta da LLM →
   validação Pydantic passa e tipos/ranges (`trimestre` 1-4) são respeitados.
 
+**Resultado (2026-06-13)**: `src/uda/prefilter.py` (PyMuPDF) extrai texto por
+página e seleciona páginas pelas palavras-chave de `PAGE_FILTER_KEYWORDS`;
+`src/uda/extraction.py` envia apenas esse texto ao `gemini-2.5-flash` com
+`response_schema=ExtracaoResultado`. Testado com o PDF de exemplo real: retorna
+14 `IndicadorExtraido` (7 empresas/total × 2 indicadores), todos com
+`valor_absoluto=None` (o PDF só traz percentuais) e variações conferindo com a
+tabela do PDF. Testes em `tests/test_prefilter.py`.
+
 **Blocked by**: fase::0 setup do projeto, fase::0 geração da chave (ou modo
 mock).
 
 ---
 
-### [fase::3] [type::feature] [priority::p0] [status::todo] Persistência das métricas extraídas (linhagem)
+### [fase::3] [type::feature] [priority::p0] [status::done] Persistência das métricas extraídas (linhagem)
 
 Grava os Indicadores extraídos na tabela `indicadores`, vinculados ao
 `relatorio_hash` (Linhagem).
@@ -107,11 +115,17 @@ Grava os Indicadores extraídos na tabela `indicadores`, vinculados ao
   (MRV, Cury, Tenda, Plano & Plano, Direcional, Pacaembu) para Lançamentos e
   Vendas são persistidas.
 
+**Resultado (2026-06-13)**: `registrar_indicadores` (em `src/uda/db.py`),
+chamada por `processar_pdf`, grava cada `IndicadorExtraido` em `indicadores`
+com `relatorio_hash` apontando para a linha de `relatorios`. Confirmado com o
+PDF de exemplo: 14 linhas persistidas, todas com `relatorio_hash` válido.
+Testes em `tests/test_db.py`.
+
 **Blocked by**: fase::1 hash/catálogo, fase::2 extração via Gemini.
 
 ---
 
-### [fase::4] [type::feature] [priority::p0] [status::todo] API REST `/api/conjuntura`
+### [fase::4] [type::feature] [priority::p0] [status::done] API REST `/api/conjuntura`
 
 Endpoint FastAPI que consulta `indicadores` (com join em `relatorios` para
 `url_origem`/Linhagem) filtrando por `empresa`, `ano`, `trimestre` (todos
@@ -123,6 +137,13 @@ opcionais).
   Indicadores de MRV no 3T25.
 - Cada item da resposta inclui `url_origem` (Linhagem).
 - Teste de integração com fixture do Catálogo de Dados populado.
+
+**Resultado (2026-06-13)**: `src/uda/api.py` expõe `GET /api/conjuntura` com
+filtros opcionais `empresa`/`ano`/`trimestre`, usando `lifespan` para
+`init_db()`. Verificado com uvicorn + curl contra o catálogo populado pelo PDF
+de exemplo: sem filtros retorna 14 itens; com
+`empresa=MRV&ano=2025&trimestre=3` retorna 2 itens (lançamentos e vendas), cada
+um com `url_origem`. Testes em `tests/test_api.py`.
 
 **Blocked by**: fase::3 persistência das métricas.
 

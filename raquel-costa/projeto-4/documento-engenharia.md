@@ -16,23 +16,55 @@ descrição textual a ser preenchida durante a implementação.)
 
 ## 3. Camada A — Extração e Idempotência
 
-(A preencher na fase::1 do backlog.)
+`src/uda/hashing.py` calcula o SHA-256 do PDF (`hash_arquivo`). `src/uda/pipeline.py`
+(`processar_pdf`) orquestra o fluxo: calcula o hash, consulta
+`relatorio_existe` (ver [ADR-0003](docs/adr/0003-idempotencia-via-sha256-em-sqlite.md));
+se o hash já existir em `relatorios`, retorna `"ignorado"` sem chamar o
+Gemini. Caso contrário, segue para o Pré-filtro (Camada B), grava o relatório
+e os indicadores extraídos, e retorna `"processado"`. Testado com o PDF de
+exemplo: a 1ª execução processa e persiste 14 indicadores; a 2ª execução do
+mesmo arquivo é ignorada.
 
 ## 4. Camada B — Contrato Semântico e Chunking
 
-(A preencher nas fases::2 do backlog. Decisões já registradas em
-[ADR-0001](docs/adr/0001-pre-filtro-de-paginas-antes-da-llm.md),
-[ADR-0002](docs/adr/0002-gemini-flash-com-saida-estruturada.md),
-[ADR-0005](docs/adr/0005-contrato-cobre-absolutos-e-percentuais-com-null.md).)
+`src/uda/prefilter.py` usa PyMuPDF (`fitz`) para extrair o texto de cada
+página do PDF (`extrair_texto_por_pagina`) e filtra páginas relevantes por
+palavras-chave (`pagina_relevante`, `PAGE_FILTER_KEYWORDS` em
+`src/uda/config.py`), conforme [ADR-0001](docs/adr/0001-pre-filtro-de-paginas-antes-da-llm.md).
+Apenas o texto das páginas selecionadas (não o PDF inteiro) é enviado ao
+Gemini.
+
+`src/uda/extraction.py` define `extrair_indicadores`, que envia esse texto ao
+modelo `gemini-2.5-flash` via `client.models.generate_content` com
+`response_schema=ExtracaoResultado` (ver [ADR-0002](docs/adr/0002-gemini-flash-com-saida-estruturada.md)).
+O Contrato Semântico (`src/uda/schemas.py`) define `IndicadorExtraido`
+(`empresa`, `ano`, `trimestre` 1-4, `indicador` ∈ {`lancamentos`, `vendas`},
+`valor_absoluto`, `var_qoq`, `var_yoy`, `var_acumulado_aa`, todos opcionais e
+`None` quando ausentes no PDF — ver [ADR-0005](docs/adr/0005-contrato-cobre-absolutos-e-percentuais-com-null.md)).
+Testado com o PDF de exemplo real: 14 `IndicadorExtraido` retornados (7
+empresas/total × 2 indicadores), todos com `valor_absoluto=None` e percentuais
+conferindo com a tabela do PDF.
 
 ## 5. Camada C — API REST
 
-(A preencher na fase::4 do backlog.)
+`src/uda/api.py` expõe `GET /api/conjuntura` (FastAPI), com filtros opcionais
+`empresa`, `ano` e `trimestre`. A consulta usa `consultar_indicadores`
+(`src/uda/db.py`), que faz `JOIN` entre `indicadores` e `relatorios` para
+incluir `url_origem` (Linhagem) em cada item da resposta. A inicialização do
+banco (`init_db`) ocorre via `lifespan` da aplicação FastAPI. Verificado com
+uvicorn + curl: sem filtros retorna os 14 indicadores do PDF de exemplo; com
+`empresa=MRV&ano=2025&trimestre=3` retorna 2 itens (lançamentos e vendas), cada
+um com `url_origem` apontando para o PDF de origem.
 
 ## 6. Modelo de dados e linhagem
 
-(A preencher nas fases::1/3 do backlog. Decisão de modelo em
-[ADR-0004](docs/adr/0004-modelo-de-dados-uma-linha-por-indicador.md).)
+`src/uda/db.py` define o schema SQLite com duas tabelas (ver
+[ADR-0004](docs/adr/0004-modelo-de-dados-uma-linha-por-indicador.md)):
+`relatorios` (`hash` PK, `url_origem`, `arquivo_local`,
+`data_processamento`) e `indicadores` (uma linha por `empresa`/`ano`/
+`trimestre`/`indicador`, com `relatorio_hash` referenciando `relatorios.hash`).
+Essa referência é a Linhagem: toda consulta à API carrega `url_origem` junto
+com cada indicador, permitindo rastrear de qual Prévia Operacional o dado veio.
 
 ## 7. Gatilho de ingestão (próximos passos)
 

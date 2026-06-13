@@ -8,6 +8,7 @@ import sqlite3
 from pathlib import Path
 
 from uda.config import DB_PATH
+from uda.schemas import IndicadorExtraido
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS relatorios (
@@ -32,13 +33,13 @@ CREATE TABLE IF NOT EXISTS indicadores (
 """
 
 
-def get_connection(db_path: Path | str = DB_PATH) -> sqlite3.Connection:
-    conn = sqlite3.connect(db_path)
+def get_connection(db_path: Path | str | None = None) -> sqlite3.Connection:
+    conn = sqlite3.connect(db_path if db_path is not None else DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
 
-def init_db(db_path: Path | str = DB_PATH) -> None:
+def init_db(db_path: Path | str | None = None) -> None:
     conn = get_connection(db_path)
     try:
         conn.executescript(SCHEMA)
@@ -62,6 +63,59 @@ def registrar_relatorio(
         (hash_pdf, url_origem, arquivo_local),
     )
     conn.commit()
+
+
+def registrar_indicadores(
+    conn: sqlite3.Connection, hash_pdf: str, indicadores: list[IndicadorExtraido]
+) -> None:
+    conn.executemany(
+        """
+        INSERT INTO indicadores
+            (relatorio_hash, empresa, ano, trimestre, indicador, valor_absoluto, var_qoq, var_yoy, var_acumulado_aa)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        [
+            (
+                hash_pdf,
+                item.empresa,
+                item.ano,
+                item.trimestre,
+                item.indicador,
+                item.valor_absoluto,
+                item.var_qoq,
+                item.var_yoy,
+                item.var_acumulado_aa,
+            )
+            for item in indicadores
+        ],
+    )
+    conn.commit()
+
+
+def consultar_indicadores(
+    conn: sqlite3.Connection,
+    empresa: str | None = None,
+    ano: int | None = None,
+    trimestre: int | None = None,
+) -> list[sqlite3.Row]:
+    query = """
+        SELECT i.*, r.url_origem
+        FROM indicadores i
+        JOIN relatorios r ON r.hash = i.relatorio_hash
+        WHERE 1=1
+    """
+    params: list = []
+    if empresa is not None:
+        query += " AND i.empresa = ?"
+        params.append(empresa)
+    if ano is not None:
+        query += " AND i.ano = ?"
+        params.append(ano)
+    if trimestre is not None:
+        query += " AND i.trimestre = ?"
+        params.append(trimestre)
+
+    return conn.execute(query, params).fetchall()
 
 
 if __name__ == "__main__":
