@@ -13,7 +13,7 @@ flowchart LR
     E --> VAL["Validação semântica pós-LLM (warnings)"]
     VAL --> F[("Catálogo de Dados SQLite")]
     F --> F1["tabela relatorios: hash, url_origem, arquivo_local"]
-    F --> F2["tabela indicadores: empresa, ano, trimestre, indicador, valor_absoluto, var_qoq, var_yoy, var_acumulado_aa"]
+    F --> F2["tabela indicadores: empresa, ano, trimestre, indicador, variante, unidade, valor_absoluto, var_qoq, var_yoy, var_acumulado_aa"]
     F2 --> G["API FastAPI: GET /api/conjuntura?empresa=&ano=&trimestre="]
 ```
 

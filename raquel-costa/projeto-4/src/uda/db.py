@@ -25,6 +25,8 @@ CREATE TABLE IF NOT EXISTS indicadores (
     ano INTEGER NOT NULL,
     trimestre INTEGER NOT NULL,
     indicador TEXT NOT NULL,
+    variante TEXT,
+    unidade TEXT,
     valor_absoluto REAL,
     var_qoq REAL,
     var_yoy REAL,
@@ -71,8 +73,9 @@ def registrar_indicadores(
     conn.executemany(
         """
         INSERT INTO indicadores
-            (relatorio_hash, empresa, ano, trimestre, indicador, valor_absoluto, var_qoq, var_yoy, var_acumulado_aa)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (relatorio_hash, empresa, ano, trimestre, indicador, variante, unidade,
+             valor_absoluto, var_qoq, var_yoy, var_acumulado_aa)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         [
             (
@@ -81,6 +84,8 @@ def registrar_indicadores(
                 item.ano,
                 item.trimestre,
                 item.indicador,
+                item.variante,
+                item.unidade,
                 item.valor_absoluto,
                 item.var_qoq,
                 item.var_yoy,
@@ -97,6 +102,8 @@ def consultar_indicadores(
     empresa: str | None = None,
     ano: int | None = None,
     trimestre: int | None = None,
+    variante: str | None = None,
+    unidade: str | None = None,
 ) -> list[sqlite3.Row]:
     query = """
         SELECT i.*, r.url_origem
@@ -114,6 +121,12 @@ def consultar_indicadores(
     if trimestre is not None:
         query += " AND i.trimestre = ?"
         params.append(trimestre)
+    if variante is not None:
+        query += " AND i.variante = ?"
+        params.append(variante)
+    if unidade is not None:
+        query += " AND i.unidade = ?"
+        params.append(unidade)
 
     return conn.execute(query, params).fetchall()
 

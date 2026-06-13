@@ -15,6 +15,34 @@ def test_indicador_aceita_campos_ausentes_como_none():
     assert item.var_qoq is None
     assert item.var_yoy is None
     assert item.var_acumulado_aa is None
+    assert item.variante is None
+    assert item.unidade is None
+
+
+def test_indicador_com_variante_e_unidade():
+    item = IndicadorExtraido(
+        empresa="Cyrela Brazil Realty",
+        ano=2025,
+        trimestre=3,
+        indicador="lancamentos",
+        variante="ex_permuta",
+        unidade="R$_milhoes",
+        valor_absoluto=3411.0,
+    )
+    assert item.variante == "ex_permuta"
+    assert item.unidade == "R$_milhoes"
+    assert item.valor_absoluto == 3411.0
+
+
+def test_unidade_invalida_rejeitada():
+    with pytest.raises(ValidationError):
+        IndicadorExtraido(
+            empresa="Cyrela",
+            ano=2025,
+            trimestre=3,
+            indicador="lancamentos",
+            unidade="reais",  # fora do Literal de Unidade
+        )
 
 
 def test_indicador_total_setor_com_variacoes():

@@ -104,3 +104,20 @@ populado e conferindo com a fonte. Diferenças de comportamento (uso indevido de
 extras; ausência de campo de unidade) e recomendações registradas em
 [`validacao-2-layout.md`](./validacao-2-layout.md). `fase::6` marcada como
 `status::done`.
+
+## 2026-06-13 — Evoluções pós-validação (rótulo de empresa + variante/unidade)
+
+Implementadas as duas recomendações da validação de 2º layout:
+
+1. **Rótulo de empresa generalizado** — o prompt passou a usar o nome da empresa
+   emissora em documentos de emissor único, reservando `TOTAL_SETOR` para totais
+   agregados de várias empresas.
+2. **Campos `variante` e `unidade` no Contrato (ADR-0007)** — `IndicadorExtraido`
+   e a tabela `indicadores` ganharam `variante` (recortes com/ex-permuta) e
+   `unidade` (R$ milhões, unidades, empreendimentos, m²); chave lógica estendida
+   para incluir `variante`; API com filtros `variante`/`unidade`.
+
+Re-validado nos 2 PDFs com a API real: boletim de exemplo mantém 14 linhas e
+`TOTAL_SETOR` correto (variante/unidade NULL, retrocompatível); Cyrela passa a
+rotular "Cyrela Brazil Realty" em todas as linhas, com `ex_permuta`/`permutas`
+e `unidade` distinguindo `empreendimentos` de `R$_milhoes`. 30 testes passando.

@@ -48,16 +48,21 @@ O pipeline rodou ponta-a-ponta (`status=processado`) pelo caminho de texto
    O Contrato não tem campo de **unidade**, então contagem e R$ ficam
    indistinguíveis.
 
-## Recomendações (próximos passos)
+## Recomendações — implementadas (ADR-0007)
 
-- **Generalizar o rótulo de empresa:** ajustar o prompt para usar o nome da
-  empresa do cabeçalho quando o documento for de emissor único, reservando
-  `TOTAL_SETOR` para boletins agregados.
-- **Campo `unidade`/`variante` no Contrato:** acrescentar `unidade`
-  ("R$_milhoes" | "unidades" | "empreendimentos") e/ou `variante`
-  ("com_permuta" | "ex_permuta") para desambiguar absolutos e variantes — sem
-  quebrar o modelo de uma-linha-por-indicador (a chave passaria a incluir a
-  variante).
+As duas recomendações foram implementadas e re-validadas contra os dois PDFs:
 
-Estas são evoluções de robustez; o critério da `fase::6` (processar 2º layout +
-documentar diferenças) está atendido.
+- **Rótulo de empresa generalizado:** o prompt passou a usar o nome da empresa
+  emissora em documentos de emissor único, reservando `TOTAL_SETOR` para totais
+  agregados de várias empresas. Resultado: na Cyrela todas as linhas ficam
+  "Cyrela Brazil Realty" (sem `TOTAL_SETOR` indevido); no boletim de exemplo os
+  2 totais agregados seguem como `TOTAL_SETOR` (sem regressão).
+- **Campos `variante` e `unidade` no Contrato (ADR-0007):** a chave lógica
+  passou a `(empresa, ano, trimestre, indicador, variante)`. Na Cyrela, as
+  variantes ficam distinguíveis (`ex_permuta` R$ 3.411M e R$ 2.459M, `permutas`
+  R$ 126M) e a contagem "18 empreendimentos" recebe `unidade=empreendimentos`,
+  separada dos valores em `R$_milhoes`. No exemplo (só percentuais), `variante`
+  e `unidade` permanecem `NULL` — retrocompatível.
+
+Com isso, o critério da `fase::6` (processar 2º layout + documentar diferenças)
+está atendido e as evoluções de robustez identificadas foram incorporadas.

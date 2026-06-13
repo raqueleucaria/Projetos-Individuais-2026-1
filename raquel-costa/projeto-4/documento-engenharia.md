@@ -41,8 +41,12 @@ modelo `gemini-2.5-flash` via `client.models.generate_content` com
 (geração determinística — ver [ADR-0002](docs/adr/0002-gemini-flash-com-saida-estruturada.md)).
 O Contrato Semântico (`src/uda/schemas.py`) define `IndicadorExtraido`
 (`empresa`, `ano`, `trimestre` 1-4, `indicador` ∈ {`lancamentos`, `vendas`},
-`valor_absoluto`, `var_qoq`, `var_yoy`, `var_acumulado_aa`, todos opcionais e
-`None` quando ausentes no PDF — ver [ADR-0005](docs/adr/0005-contrato-cobre-absolutos-e-percentuais-com-null.md)).
+`variante`, `unidade`, `valor_absoluto`, `var_qoq`, `var_yoy`,
+`var_acumulado_aa`, todos opcionais e `None` quando ausentes no PDF — ver
+[ADR-0005](docs/adr/0005-contrato-cobre-absolutos-e-percentuais-com-null.md) e
+[ADR-0007](docs/adr/0007-variante-e-unidade-no-contrato.md)). `variante`
+distingue recortes do mesmo indicador (com/ex-permuta) e `unidade` desambigua
+`valor_absoluto` (R$ milhões, unidades, empreendimentos, m²).
 Testado com o PDF de exemplo real: 14 `IndicadorExtraido` retornados (7
 empresas/total × 2 indicadores), todos com `valor_absoluto=None` e percentuais
 conferindo com a tabela do PDF.
@@ -75,7 +79,9 @@ um com `url_origem` apontando para o PDF de origem.
 [ADR-0004](docs/adr/0004-modelo-de-dados-uma-linha-por-indicador.md)):
 `relatorios` (`hash` PK, `url_origem`, `arquivo_local`,
 `data_processamento`) e `indicadores` (uma linha por `empresa`/`ano`/
-`trimestre`/`indicador`, com `relatorio_hash` referenciando `relatorios.hash`).
+`trimestre`/`indicador`/`variante`, com colunas `variante`, `unidade`,
+`valor_absoluto` e variações, e `relatorio_hash` referenciando
+`relatorios.hash` — ver [ADR-0007](docs/adr/0007-variante-e-unidade-no-contrato.md)).
 Essa referência é a Linhagem: toda consulta à API carrega `url_origem` junto
 com cada indicador, permitindo rastrear de qual Prévia Operacional o dado veio.
 

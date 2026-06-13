@@ -213,3 +213,24 @@ exemplo: 14 indicadores conferindo com a tabela. 27 testes passando (novos em
 `tests/test_validation.py` e `tests/test_prefilter.py`).
 
 **Blocked by**: fase::2, fase::3, fase::4.
+
+---
+
+### [fase::6] [type::feature] [priority::p1] [status::done] Evoluções pós-validação: rótulo de empresa + variante/unidade
+
+Evoluções derivadas da validação de 2º layout (`validacao-2-layout.md`).
+
+**Critérios de aceite:**
+- Prompt usa o nome da empresa emissora em docs de emissor único; ✅
+  `TOTAL_SETOR` só para totais agregados de várias empresas.
+- Contrato ganha `variante` e `unidade` (ADR-0007); API filtra por ambos. ✅
+- Re-validado nos 2 PDFs sem regressão. ✅
+
+**Resultado (2026-06-13)**: `schemas.py` (+`variante`/`unidade`), `db.py`
+(+colunas e filtros), `api.py` (+filtros), prompt generalizado em
+`extraction.py`, ADR-0007. Re-validado: boletim mantém 14 linhas e `TOTAL_SETOR`
+correto (variante/unidade NULL); Cyrela passa a rotular "Cyrela Brazil Realty"
+em todas as linhas, com `ex_permuta`/`permutas` e `unidade` separando
+`empreendimentos` de `R$_milhoes`. 30 testes passando.
+
+**Blocked by**: fase::6 validação com 2º layout.

@@ -30,18 +30,27 @@ construtoras, contendo tabelas de Lançamentos e Vendas por empresa. As tabelas 
 podem vir formatadas em Markdown — use o alinhamento de colunas para associar \
 cada valor à empresa e ao indicador corretos.
 
-Extraia UM item por (empresa, indicador) usando exatamente o Contrato \
-Semântico fornecido:
-- "empresa": nome da construtora exatamente como aparece no texto. Use \
-"TOTAL_SETOR" para os totais agregados do setor (ex: "Total lançamentos", \
-"Total vendas").
+Extraia UM item por (empresa, indicador, variante) usando exatamente o \
+Contrato Semântico fornecido:
+- "empresa": nome da empresa que **emite** o documento, exatamente como \
+aparece no cabeçalho/título. Use "TOTAL_SETOR" **apenas** para linhas que \
+sejam totais explicitamente agregados de **várias** empresas (ex: um boletim \
+setorial com "Total lançamentos" somando empresas distintas). Se o documento é \
+de uma **única** empresa, use o nome dela em TODAS as linhas — nunca \
+"TOTAL_SETOR".
 - "ano" e "trimestre": deduza do cabeçalho do documento (ex: "3º TRIMESTRE \
 DE 2025" -> ano=2025, trimestre=3). Aplique o mesmo ano/trimestre a todos \
 os itens, salvo indicação explícita em contrário.
 - "indicador": "lancamentos" ou "vendas".
-- "valor_absoluto": valor absoluto (R$, unidades, m²) do indicador, se \
-presente no texto. Se o texto só traz percentuais de variação, deixe NULL. \
-NÃO calcule nem estime valores absolutos a partir de percentuais.
+- "variante": quando o MESMO indicador aparece em recortes diferentes, \
+distinga-os: "com_permuta", "ex_permuta" (ou "%CBR ex-permuta"), "permutas". \
+Se não houver recorte explícito, deixe NULL.
+- "unidade": unidade de "valor_absoluto" — "R$_milhoes" (valores em R$ \
+milhões), "unidades" (nº de unidades), "empreendimentos" (nº de \
+empreendimentos) ou "m2" (área). NULL quando "valor_absoluto" for NULL.
+- "valor_absoluto": valor absoluto do indicador, se presente no texto, na \
+unidade indicada em "unidade". Se o texto só traz percentuais de variação, \
+deixe NULL. NÃO calcule nem estime valores absolutos a partir de percentuais.
 - "var_qoq": variação percentual em relação ao trimestre anterior (ex: \
 "X 2T25" quando o documento é do 3T). NULL se ausente.
 - "var_yoy": variação percentual em relação ao mesmo trimestre do ano \

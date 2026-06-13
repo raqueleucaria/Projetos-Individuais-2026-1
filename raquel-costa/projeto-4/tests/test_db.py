@@ -84,3 +84,36 @@ def test_registrar_e_consultar_indicadores(tmp_path):
     assert nenhum == []
 
     conn.close()
+
+
+def test_registrar_e_consultar_variante_unidade(tmp_path):
+    db_path = tmp_path / "catalogo.db"
+    init_db(db_path)
+    conn = get_connection(db_path)
+
+    hash_pdf = "c" * 64
+    registrar_relatorio(conn, hash_pdf, "https://exemplo.com/cyrela.pdf", "data/cyrela.pdf")
+    registrar_indicadores(
+        conn,
+        hash_pdf,
+        [
+            IndicadorExtraido(
+                empresa="Cyrela", ano=2025, trimestre=3, indicador="lancamentos",
+                variante="com_permuta", unidade="R$_milhoes", valor_absoluto=5050.0,
+            ),
+            IndicadorExtraido(
+                empresa="Cyrela", ano=2025, trimestre=3, indicador="lancamentos",
+                variante="ex_permuta", unidade="R$_milhoes", valor_absoluto=3411.0,
+            ),
+        ],
+    )
+
+    ex = consultar_indicadores(conn, empresa="Cyrela", variante="ex_permuta")
+    assert len(ex) == 1
+    assert ex[0]["valor_absoluto"] == 3411.0
+    assert ex[0]["unidade"] == "R$_milhoes"
+
+    em_rs = consultar_indicadores(conn, unidade="R$_milhoes")
+    assert len(em_rs) == 2
+
+    conn.close()
