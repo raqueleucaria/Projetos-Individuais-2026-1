@@ -40,14 +40,10 @@ triagem usariam em issues reais.
 
 O enunciado exige uma estratégia de detecção de novas Prévias Operacionais nas
 Centrais de Resultados (RI) das construtoras. O MVP processa uma lista fixa
-(o PDF de exemplo em `data/`); o próximo passo planejado é:
-
-- **Polling/CronJob** diário sobre as páginas de Central de Resultados das
-  empresas-alvo (MRV, Cury, Tenda, Plano & Plano, Direcional, Pacaembu),
-  comparando os links de PDF encontrados com os hashes já registrados em
-  `relatorios` (reaproveitando a Idempotência da fase::1 do backlog).
-- Alternativa de RSS/webhook não é viável para a maioria dos portais de RI
-  observados (não publicam feed), por isso polling é a estratégia recomendada.
+(o PDF de exemplo em `data/`); a estratégia de **polling diário** — incluindo
+frequência sugerida, portais de RI das empresas-alvo e como o coletor delega a
+deduplicação à Idempotência da fase::1 (`processar_pdf` → hash → `relatorios`)
+— está detalhada em [`ingestao-polling.md`](./ingestao-polling.md).
 
 ## Restaurando as skills (mattpocock)
 

@@ -1,0 +1,8 @@
+pymupdf
+pydantic
+google-genai
+python-dotenv
+fastapi
+uvicorn[standard]
+pytest
+httpx
