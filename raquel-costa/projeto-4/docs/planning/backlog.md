@@ -6,17 +6,21 @@ Itens em fatias verticais (tracer bullets), priorizados para o prazo de
 
 ---
 
-### [fase::0] [type::chore] [priority::p0] [status::todo] Setup do projeto
+### [fase::0] [type::chore] [priority::p0] [status::done] Setup do projeto
 
 Estrutura `src/`/`tests/`, `requirements.txt`, `.env.example`, configuração de
 acesso ao SQLite.
 
 **Critérios de aceite:**
-- `pip install -r requirements.txt` instala todas as deps (pymupdf, pydantic,
-  fastapi, uvicorn, google-genai/google-generativeai, pytest).
-- `.env.example` documenta `GEMINI_API_KEY`.
-- Banco SQLite criado com as tabelas `relatorios` e `indicadores`
-  (ADR-0004).
+- `pip install -r requirements.txt` instala todas as deps (pymupdf, pydantic, ✅
+  fastapi, uvicorn, google-genai, pytest, httpx).
+- `.env.example` documenta `GEMINI_API_KEY`. ✅
+- Banco SQLite criado com as tabelas `relatorios` e `indicadores` ✅
+  (ADR-0004) via `src/uda/db.py` (`init_db`).
+
+**Resultado (2026-06-13)**: criados `src/uda/{config,db,schemas,hashing}.py` +
+testes (`tests/test_db.py`, `test_schemas.py`, `test_hashing.py`), 12 testes
+passando (`pytest`).
 
 **Blocked by**: None - pode começar imediatamente.
 
@@ -44,7 +48,7 @@ do pipeline.
 
 ---
 
-### [fase::1] [type::feature] [priority::p0] [status::todo] Hash/idempotência + catálogo SQLite
+### [fase::1] [type::feature] [priority::p0] [status::doing] Hash/idempotência + catálogo SQLite
 
 Função que calcula SHA-256 do PDF, consulta a tabela `relatorios` e decide se o
 arquivo deve ser processado ou ignorado.
@@ -56,6 +60,12 @@ arquivo deve ser processado ou ignorado.
   `url_origem` e `arquivo_local`.
 - Teste de integração: processar o mesmo PDF duas vezes não duplica chamadas à
   LLM (mockada) nem linhas em `indicadores`.
+
+**Progresso (2026-06-13)**: building blocks prontos em `src/uda/hashing.py`
+(`hash_arquivo`) e `src/uda/db.py` (`relatorio_existe`, `registrar_relatorio`),
+com testes em `tests/test_db.py`/`test_hashing.py`. Falta o script de
+orquestração (`fase::1` → `fase::2`) que decide processar/ignorar e o teste de
+integração "processar duas vezes".
 
 **Blocked by**: fase::0 setup do projeto.
 
