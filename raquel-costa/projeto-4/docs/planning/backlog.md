@@ -149,15 +149,22 @@ um com `url_origem`. Testes em `tests/test_api.py`.
 
 ---
 
-### [fase::5] [type::feature] [priority::p1] [status::todo] Documentar gatilho de ingestão (polling) como próximo passo
+### [fase::5] [type::feature] [priority::p1] [status::done] Documentar gatilho de ingestão (polling) como próximo passo
 
 Seção em `docs/planning/00-overview.md` (ou novo doc) descrevendo a estratégia
 de polling/cron para detectar novas Prévias Operacionais nas Centrais de
 Resultados, sem implementação no MVP.
 
 **Critérios de aceite:**
-- Documento descreve frequência sugerida, fontes (URLs de RI) e como o
+- Documento descreve frequência sugerida, fontes (URLs de RI) e como o ✅
   resultado se encaixa na Idempotência (fase::1) já implementada.
+
+**Resultado (2026-06-13)**: criado
+[`docs/planning/ingestao-polling.md`](./ingestao-polling.md) com a frequência
+sugerida (polling diário, janelas trimestrais), os portais de RI das seis
+empresas-alvo e o fluxo do coletor delegando dedup ao `processar_pdf` (hash →
+`relatorios`), mantendo o coletor _stateless_. Overview atualizado para apontar
+para o doc.
 
 **Blocked by**: None - pode ser feito em paralelo, mas faz mais sentido após o
 PRD estar fechado.
