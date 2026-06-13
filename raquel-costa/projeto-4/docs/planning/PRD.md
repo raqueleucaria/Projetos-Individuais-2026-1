@@ -11,7 +11,7 @@ diferentes entre empresas e ao longo do tempo.
 ## Solution
 
 Um pipeline que: (A) coleta Prévias Operacionais e evita reprocessamento via
-Idempotência (hash SHA-256); (B) usa um Pré-filtro de Páginas + Gemini 2.0 Flash
+Idempotência (hash SHA-256); (B) usa um Pré-filtro de Páginas + Gemini 2.5 Flash
 com Contrato Semântico (Pydantic) para extrair Indicadores (Lançamentos, Vendas)
 por empresa/trimestre, com valores absolutos e percentuais, tratando ausentes
 como NULL; (C) expõe os Indicadores via API REST filtrável por empresa e
@@ -50,7 +50,7 @@ período.
   das páginas que contêm palavras-chave (`lançamentos`, `vendas`, `VGV`,
   `unidades`, e variantes). Ver [ADR-0001](../adr/0001-pre-filtro-de-paginas-antes-da-llm.md).
 - **Extração**: o texto das páginas selecionadas pelo Pré-filtro (não o PDF como
-  arquivo) é enviado ao Gemini 2.0 Flash via API, com `response_schema` derivado
+  arquivo) é enviado ao Gemini 2.5 Flash via API, com `response_schema` derivado
   do Contrato Semântico (Pydantic). Ver [ADR-0002](../adr/0002-gemini-flash-com-saida-estruturada.md).
 - **Contrato Semântico** (Pydantic, por Indicador extraído):
   - `empresa: str`

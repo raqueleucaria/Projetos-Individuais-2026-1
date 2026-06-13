@@ -50,3 +50,19 @@ e o PDF de exemplo, resolvendo:
 Resultado: [`../CONTEXT.md`](../CONTEXT.md) (glossário), ADRs 0001-0005 em
 [`../adr/`](../adr/), [`PRD.md`](./PRD.md), [`backlog.md`](./backlog.md),
 [`../diagrams/architecture.md`](../diagrams/architecture.md).
+
+## 2026-06-13 — Chave do Gemini gerada e testada
+
+Chave do Gemini gerada no Google AI Studio, configurada em `.env` local
+(`GEMINI_API_KEY`, não versionado) e validada com a lib `google-genai`.
+
+- `gemini-2.0-flash` (modelo originalmente planejado): `429 RESOURCE_EXHAUSTED`,
+  `limit: 0` no free tier — sem cota disponível para esta chave.
+- `gemini-1.5-flash`: `404 NOT_FOUND` — descontinuado.
+- `gemini-2.5-flash` e `gemini-flash-latest`: respondem normalmente.
+
+Decisão: usar `gemini-2.5-flash` na camada de extração. ADR-0002, PRD,
+backlog, README e diagrama de arquitetura atualizados de "Gemini 2.0 Flash"
+para "Gemini 2.5 Flash". `.env.example` criado (`GEMINI_API_KEY=`), `.env`
+confirmado no `.gitignore`. Item "Gerar chave do Gemini" do backlog marcado
+como `status::done`.

@@ -22,17 +22,23 @@ acesso ao SQLite.
 
 ---
 
-### [fase::0] [type::spike] [priority::p0] [status::todo] Gerar chave do Gemini
+### [fase::0] [type::spike] [priority::p0] [status::done] Gerar chave do Gemini
 
-Criar conta/chave no Google AI Studio para Gemini 2.0 Flash (free tier).
+Criar conta/chave no Google AI Studio para Gemini Flash (free tier).
 
 **Critérios de aceite:**
-- `GEMINI_API_KEY` válida disponível em `.env` local (não commitado).
-- Teste manual: chamada simples ao Gemini retorna resposta.
+- `GEMINI_API_KEY` válida disponível em `.env` local (não commitado). ✅
+- Teste manual: chamada simples ao Gemini retorna resposta. ✅
 
-**Fallback**: se a chave não estiver disponível a tempo, a Camada de extração
-(fase::2) deve suportar um "modo mock" que retorna uma resposta fixa/fixture
-em vez de chamar a API real, para não bloquear o restante do pipeline.
+**Resultado (2026-06-13)**: chave gerada e testada com `google-genai`.
+`gemini-2.0-flash` retornou `429 RESOURCE_EXHAUSTED` (`limit: 0` no free tier);
+`gemini-1.5-flash` retornou 404 (descontinuado). `gemini-2.5-flash` respondeu
+normalmente — modelo escolhido (ver ADR-0002 atualizado).
+
+**Fallback**: mantido como referência — caso a chave expire/seja revogada, a
+Camada de extração (fase::2) deve suportar um "modo mock" que retorna uma
+resposta fixa/fixture em vez de chamar a API real, para não bloquear o restante
+do pipeline.
 
 **Blocked by**: None - pode começar imediatamente, em paralelo com fase::0 setup.
 
@@ -58,7 +64,7 @@ arquivo deve ser processado ou ignorado.
 ### [fase::2] [type::feature] [priority::p0] [status::todo] Pré-filtro de páginas + extração via Gemini com Contrato Semântico
 
 Extrai texto por página (PyMuPDF), seleciona páginas por palavras-chave
-(ADR-0001), monta prompt e chama Gemini 2.0 Flash com `response_schema` derivado
+(ADR-0001), monta prompt e chama Gemini 2.5 Flash com `response_schema` derivado
 do Contrato Semântico (ADR-0002, ADR-0005).
 
 **Critérios de aceite:**

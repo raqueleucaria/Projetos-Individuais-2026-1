@@ -1,7 +1,7 @@
 # Projeto Individual 4 — Pipeline de Conjuntura do Setor Habitacional (UDA)
 
 Pipeline de Engenharia/Análise de Dados Não Estruturados (UDA) que extrai, via
-LLM (Gemini 2.0 Flash), métricas operacionais (lançamentos e vendas) de Prévias
+LLM (Gemini 2.5 Flash), métricas operacionais (lançamentos e vendas) de Prévias
 Operacionais em PDF de Relações com Investidores de construtoras, com três
 camadas: extração com idempotência por hash, contrato semântico (Pydantic) e
 API REST de consulta.

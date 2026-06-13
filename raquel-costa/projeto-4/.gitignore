@@ -2,3 +2,7 @@
 .agents/
 # Symlinks para .agents/skills/ (recriados após reinstalar via skills-lock.json)
 .claude/skills/
+.env
+.venv/
+__pycache__/
+*.pyc

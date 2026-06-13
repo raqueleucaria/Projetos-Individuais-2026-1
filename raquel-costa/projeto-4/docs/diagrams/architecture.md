@@ -6,7 +6,7 @@ flowchart LR
     B --> C{"Hash existe em 'relatorios'?"}
     C -- sim --> Z["Ignorar (idempotência)"]
     C -- não --> D["Pré-filtro de Páginas (palavras-chave)"]
-    D --> E["Gemini 2.0 Flash + Contrato Semântico (Pydantic / response_schema)"]
+    D --> E["Gemini 2.5 Flash + Contrato Semântico (Pydantic / response_schema)"]
     E --> F[("Catálogo de Dados SQLite")]
     F --> F1["tabela relatorios: hash, url_origem, arquivo_local"]
     F --> F2["tabela indicadores: empresa, ano, trimestre, indicador, valor_absoluto, var_qoq, var_yoy, var_acumulado_aa"]
