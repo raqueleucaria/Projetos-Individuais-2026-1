@@ -13,6 +13,10 @@ VGV, repasses, distratos) não previstos hoje. O modelo fino permite adicionar
 novos tipos de Indicador sem alterar o schema da tabela, apenas o vocabulário de
 valores aceitos para a coluna `indicador`.
 
+A chave lógica da linha foi posteriormente estendida para incluir `variante`
+(recortes do mesmo indicador, ex: com/ex-permuta) e a unidade do valor absoluto
+foi explicitada — ver [ADR-0007](0007-variante-e-unidade-no-contrato.md).
+
 ## Status
 
 accepted

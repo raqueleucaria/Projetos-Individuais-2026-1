@@ -66,3 +66,58 @@ backlog, README e diagrama de arquitetura atualizados de "Gemini 2.0 Flash"
 para "Gemini 2.5 Flash". `.env.example` criado (`GEMINI_API_KEY=`), `.env`
 confirmado no `.gitignore`. Item "Gerar chave do Gemini" do backlog marcado
 como `status::done`.
+
+## 2026-06-13 — Estratégias de robustez da extração
+
+Definidas quatro estratégias para elevar a qualidade e a resiliência da
+extração, aplicadas sobre o MVP já validado:
+
+1. **Extração table-aware (ADR-0001 atualizado)**: o Pré-filtro passa a enviar
+   à LLM o **Markdown** das tabelas (PyMuPDF `find_tables()`) em vez de texto
+   plano, preservando o alinhamento empresa↔valor. Re-validado contra o PDF de
+   exemplo: os 14 indicadores conferem com a tabela de origem.
+2. **Geração determinística**: `temperature=0.0` e `thinking_budget=0` na
+   chamada ao Gemini, para reprodutibilidade e menor custo/latência numa tarefa
+   estruturada.
+3. **Validação semântica pós-LLM** (`src/uda/validation.py`): além dos tipos/
+   ranges do Pydantic, sinaliza (warnings) linhas suspeitas — sem nenhum valor
+   (provável alucinação), variação fora de faixa plausível, empresa vazia, ano
+   improvável. Princípio de não confiar 100% na saída da LLM.
+4. **Fallback Gemini Vision para PDFs escaneados (ADR-0006)**: se o PDF não tem
+   camada de texto, as páginas são renderizadas como imagem e enviadas ao Gemini
+   Vision com o mesmo `response_schema`. Fecha a resiliência da `fase::6` sem
+   stack de OCR pesado.
+
+Nota técnica: corrigido um bug de `"client has been closed"` na chamada ao
+Gemini — o `Client` era criado como objeto temporário (`_client().models...`) e
+coletado pelo GC antes de a requisição rodar na thread de retry do SDK; passou a
+manter referência forte local ao `Client` durante a chamada.
+
+## 2026-06-13 — Validação com 2º layout (fase::6)
+
+Pipeline validado contra a Prévia Operacional 3T25 da **Cyrela** (CYRE3) —
+comunicado de empresa única, em prosa + tabelas, com valores absolutos em R$
+milhões (layout diferente do boletim agregado de exemplo, que só traz
+percentuais). Rodou ponta-a-ponta (`processado`), com `valor_absoluto`
+populado e conferindo com a fonte. Diferenças de comportamento (uso indevido de
+`TOTAL_SETOR` em doc de empresa única; variantes com/ex-permuta gerando linhas
+extras; ausência de campo de unidade) e recomendações registradas em
+[`validacao-2-layout.md`](./validacao-2-layout.md). `fase::6` marcada como
+`status::done`.
+
+## 2026-06-13 — Evoluções pós-validação (rótulo de empresa + variante/unidade)
+
+Implementadas as duas recomendações da validação de 2º layout:
+
+1. **Rótulo de empresa generalizado** — o prompt passou a usar o nome da empresa
+   emissora em documentos de emissor único, reservando `TOTAL_SETOR` para totais
+   agregados de várias empresas.
+2. **Campos `variante` e `unidade` no Contrato (ADR-0007)** — `IndicadorExtraido`
+   e a tabela `indicadores` ganharam `variante` (recortes com/ex-permuta) e
+   `unidade` (R$ milhões, unidades, empreendimentos, m²); chave lógica estendida
+   para incluir `variante`; API com filtros `variante`/`unidade`.
+
+Re-validado nos 2 PDFs com a API real: boletim de exemplo mantém 14 linhas e
+`TOTAL_SETOR` correto (variante/unidade NULL, retrocompatível); Cyrela passa a
+rotular "Cyrela Brazil Realty" em todas as linhas, com `ex_permuta`/`permutas`
+e `unidade` distinguindo `empreendimentos` de `R$_milhoes`. 30 testes passando.

@@ -25,10 +25,19 @@ def conjuntura(
     empresa: str | None = None,
     ano: int | None = None,
     trimestre: int | None = None,
+    variante: str | None = None,
+    unidade: str | None = None,
 ) -> list[dict]:
     conn = get_connection()
     try:
-        rows = consultar_indicadores(conn, empresa=empresa, ano=ano, trimestre=trimestre)
+        rows = consultar_indicadores(
+            conn,
+            empresa=empresa,
+            ano=ano,
+            trimestre=trimestre,
+            variante=variante,
+            unidade=unidade,
+        )
         return [dict(row) for row in rows]
     finally:
         conn.close()

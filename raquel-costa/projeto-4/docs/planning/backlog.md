@@ -171,15 +171,66 @@ PRD estar fechado.
 
 ---
 
-### [fase::6] [type::spike] [priority::p2] [status::todo] Validação com 2º layout de Prévia Operacional (pós-MVP)
+### [fase::6] [type::spike] [priority::p2] [status::done] Validação com 2º layout de Prévia Operacional (pós-MVP)
 
 Buscar uma Prévia Operacional real em outro layout (ex: MRV RI, apresentação em
 slides), rodar o pipeline e documentar ajustes necessários para resiliência.
 
 **Critérios de aceite:**
-- PDF de outro layout processado com sucesso (mesmo que com campos NULL para o
+- PDF de outro layout processado com sucesso (mesmo que com campos NULL para o ✅
   que não existir nesse layout).
-- Diferenças de comportamento (Pré-filtro, schema) documentadas.
+- Diferenças de comportamento (Pré-filtro, schema) documentadas. ✅
+
+**Resultado (2026-06-13)**: validado com a **Prévia Operacional 3T25 da Cyrela**
+(CYRE3) — comunicado de empresa única, em prosa + tabelas, com valores absolutos
+em R$ milhões (layout bem diferente do boletim agregado de exemplo). Pipeline
+rodou ponta-a-ponta (`processado`); desta vez `valor_absoluto` veio populado
+(R$ 5.050M / R$ 3.411M lançamentos, R$ 2.459M vendas), conferindo com o texto.
+Diferenças e recomendações (rótulo `TOTAL_SETOR` em doc de empresa única;
+variantes com/ex-permuta; falta de campo de unidade) documentadas em
+[`validacao-2-layout.md`](./validacao-2-layout.md).
 
 **Blocked by**: fase::2, fase::3, fase::4 (pipeline ponta-a-ponta funcionando
 com o PDF de exemplo).
+
+---
+
+### [fase::6] [type::feature] [priority::p1] [status::done] Estratégias de robustez da extração
+
+Quatro estratégias para elevar qualidade/resiliência sobre o MVP validado.
+
+**Critérios de aceite:**
+- Extração table-aware: tabelas viram Markdown antes da LLM (ADR-0001). ✅
+- Geração determinística: `temperature=0.0` + `thinking_budget=0`. ✅
+- Validação semântica pós-LLM com warnings (`src/uda/validation.py`). ✅
+- Fallback Gemini Vision para PDFs sem camada de texto (ADR-0006). ✅
+
+**Resultado (2026-06-13)**: `prefilter.py` (Markdown via `find_tables()` +
+`tem_camada_de_texto`), `extraction.py` (config determinística +
+`extrair_indicadores_vision`), `validation.py` (novo) e `pipeline.py`
+(classificação texto/scan + validação). Re-validado e2e contra o PDF de
+exemplo: 14 indicadores conferindo com a tabela. 27 testes passando (novos em
+`tests/test_validation.py` e `tests/test_prefilter.py`).
+
+**Blocked by**: fase::2, fase::3, fase::4.
+
+---
+
+### [fase::6] [type::feature] [priority::p1] [status::done] Evoluções pós-validação: rótulo de empresa + variante/unidade
+
+Evoluções derivadas da validação de 2º layout (`validacao-2-layout.md`).
+
+**Critérios de aceite:**
+- Prompt usa o nome da empresa emissora em docs de emissor único; ✅
+  `TOTAL_SETOR` só para totais agregados de várias empresas.
+- Contrato ganha `variante` e `unidade` (ADR-0007); API filtra por ambos. ✅
+- Re-validado nos 2 PDFs sem regressão. ✅
+
+**Resultado (2026-06-13)**: `schemas.py` (+`variante`/`unidade`), `db.py`
+(+colunas e filtros), `api.py` (+filtros), prompt generalizado em
+`extraction.py`, ADR-0007. Re-validado: boletim mantém 14 linhas e `TOTAL_SETOR`
+correto (variante/unidade NULL); Cyrela passa a rotular "Cyrela Brazil Realty"
+em todas as linhas, com `ex_permuta`/`permutas` e `unidade` separando
+`empreendimentos` de `R$_milhoes`. 30 testes passando.
+
+**Blocked by**: fase::6 validação com 2º layout.
