@@ -22,6 +22,7 @@ from pathlib import Path
 from uda.config import BASE_DIR
 
 GOLDEN_DIR = BASE_DIR / "benchmark" / "golden"
+SNAPSHOT_DIR = BASE_DIR / "benchmark" / "snapshots"
 CAMPOS_PERCENTUAIS = ("var_qoq", "var_yoy", "var_acumulado_aa")
 TOL_PP = 0.5      # tolerância em pontos percentuais para variações
 TOL_REL = 0.01    # tolerância relativa (1%) para valor_absoluto
@@ -127,6 +128,11 @@ def avaliar(esperado: list[dict], extraido: list) -> Metricas:
 
 def carregar_golden(nome: str) -> dict:
     return json.loads((GOLDEN_DIR / f"{nome}.json").read_text(encoding="utf-8"))
+
+
+def carregar_snapshot(nome: str) -> list[dict]:
+    """Carrega um snapshot gravado de extração real (para asserts offline)."""
+    return json.loads((SNAPSHOT_DIR / f"{nome}.json").read_text(encoding="utf-8"))
 
 
 def listar_golden() -> list[str]:

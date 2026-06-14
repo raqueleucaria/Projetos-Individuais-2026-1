@@ -10,9 +10,29 @@ são mapeadas aos critérios de avaliação do desafio.
 # Relatório (roda o pipeline real; baixa PDFs de terceiros sob demanda):
 PYTHONPATH=src python -m uda.benchmark
 
-# Testes determinísticos do medidor (sem LLM, no pytest padrão):
+# Asserts de qualidade separados por PDF (offline, via snapshot — rodam no CI):
+PYTHONPATH=src pytest tests/test_benchmark_qualidade.py -q
+
+# Testes determinísticos do medidor (sem LLM):
 PYTHONPATH=src pytest tests/test_benchmark_metrics.py -q
 ```
+
+## Separação por PDF e snapshots
+
+Os asserts são **separados por PDF**, conforme a `fonte` do golden:
+
+- **`boletim_3T25` (`fonte: data`)** — PDF versionado em `data/`. Roda no
+  benchmark ao vivo e tem assert offline no CI.
+- **`cyrela_3T25` (`fonte: externo`)** — PDF de terceiros que **não está em
+  `data/`**. No benchmark ao vivo é baixado sob demanda; nos testes do CI a
+  qualidade é checada contra um **snapshot** gravado em `benchmark/snapshots/`,
+  sem precisar do PDF.
+
+Cada `benchmark/snapshots/<nome>.json` é uma gravação de uma extração real; o
+assert compara golden × snapshot de forma determinística
+(`tests/test_benchmark_qualidade.py`). Regravar um snapshot que divergir do
+golden além da tolerância faz o teste falhar — sinalizando regressão. A deriva
+do LLM ao vivo é verificada rodando `python -m uda.benchmark`.
 
 ## Métricas
 
