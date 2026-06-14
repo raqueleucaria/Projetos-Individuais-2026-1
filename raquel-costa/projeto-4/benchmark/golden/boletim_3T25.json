@@ -1,6 +1,7 @@
 {
   "nome": "boletim_3T25",
-  "descricao": "Boletim de Conjuntura 3T25 — agregado de 6 empresas, só percentuais. var_qoq=X2T25, var_yoy=X3T24, var_acumulado_aa=9m25/24 (a coluna 9m24/23 não é modelada). valor_absoluto sempre NULL.",
+  "fonte": "data",
+  "descricao": "Boletim de Conjuntura 3T25 — agregado de 6 empresas, só percentuais. PDF versionado em data/ (entra no CI). var_qoq=X2T25, var_yoy=X3T24, var_acumulado_aa=9m25/24 (a coluna 9m24/23 não é modelada). valor_absoluto sempre NULL.",
   "pdf_path": "data/exemplo_Boletim_Conjuntura_2025_3T.pdf",
   "esperado": [
     {"empresa": "MRV", "ano": 2025, "trimestre": 3, "indicador": "lancamentos", "variante": null, "unidade": null, "valor_absoluto": null, "var_qoq": -32, "var_yoy": -19, "var_acumulado_aa": 20},

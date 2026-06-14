@@ -1,0 +1,74 @@
+[
+  {
+    "empresa": "Cyrela Brazil Realty",
+    "ano": 2025,
+    "trimestre": 3,
+    "indicador": "lancamentos",
+    "variante": null,
+    "unidade": "empreendimentos",
+    "valor_absoluto": 18.0,
+    "var_qoq": 5.88,
+    "var_yoy": 20.0,
+    "var_acumulado_aa": 60.61
+  },
+  {
+    "empresa": "Cyrela Brazil Realty",
+    "ano": 2025,
+    "trimestre": 3,
+    "indicador": "lancamentos",
+    "variante": null,
+    "unidade": "R$_milhoes",
+    "valor_absoluto": 5050.0,
+    "var_qoq": 22.39,
+    "var_yoy": 61.69,
+    "var_acumulado_aa": 123.41
+  },
+  {
+    "empresa": "Cyrela Brazil Realty",
+    "ano": 2025,
+    "trimestre": 3,
+    "indicador": "lancamentos",
+    "variante": "permutas",
+    "unidade": "R$_milhoes",
+    "valor_absoluto": 126.0,
+    "var_qoq": -35.26,
+    "var_yoy": 28.57,
+    "var_acumulado_aa": 78.42
+  },
+  {
+    "empresa": "Cyrela Brazil Realty",
+    "ano": 2025,
+    "trimestre": 3,
+    "indicador": "lancamentos",
+    "variante": "ex_permuta",
+    "unidade": "R$_milhoes",
+    "valor_absoluto": 3411.0,
+    "var_qoq": 19.1,
+    "var_yoy": 37.68,
+    "var_acumulado_aa": 105.01
+  },
+  {
+    "empresa": "Cyrela Brazil Realty",
+    "ano": 2025,
+    "trimestre": 3,
+    "indicador": "vendas",
+    "variante": null,
+    "unidade": "R$_milhoes",
+    "valor_absoluto": 3547.0,
+    "var_qoq": 8.87,
+    "var_yoy": 10.81,
+    "var_acumulado_aa": 27.41
+  },
+  {
+    "empresa": "Cyrela Brazil Realty",
+    "ano": 2025,
+    "trimestre": 3,
+    "indicador": "vendas",
+    "variante": "ex_permuta",
+    "unidade": "R$_milhoes",
+    "valor_absoluto": 2459.0,
+    "var_qoq": 9.78,
+    "var_yoy": 0.08,
+    "var_acumulado_aa": 18.51
+  }
+]
