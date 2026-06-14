@@ -136,3 +136,21 @@ e `unidade` distinguindo `empreendimentos` de `R$_milhoes`. 30 testes passando.
   toca `raquel-costa/projeto-4/**`; testes offline (sem `GEMINI_API_KEY`).
 
 41 testes passando.
+
+## 2026-06-13 — Scheduler, Docker e 3º layout (paridade com colegas)
+
+Após comparar com as entregas dos colegas (PRs #64 e #79 do upstream), fechei os
+pontos de paridade que faltavam, mantendo os diferenciais (benchmark, CI, ADRs):
+
+- **Scheduler de ingestão contínua** (`src/uda/scheduler.py`): roda o coletor em
+  intervalo sobre `config/sources.yaml` (URLs diretas + descoberta em índices);
+  idempotência garante que ciclos repetidos não reprocessem. `pyyaml` adicionado.
+- **Docker** (`Dockerfile` + `docker-compose.yml`): API + scheduler como
+  serviços, Catálogo via volume; `DB_PATH` configurável por env. Build e API
+  verificados em container.
+- **3º layout** (`tenda_3T25`): Release de Resultados 3T25 da Tenda (29 páginas),
+  golden + snapshot + assert por PDF; absolutos conferem com fatos públicos.
+- **Guard** de `GEMINI_API_KEY` ausente (mensagem clara).
+
+48 testes passando. Nota: a captura do snapshot da Tenda usou
+`gemini-flash-latest` (cota diária do `gemini-2.5-flash` esgotada no dia).

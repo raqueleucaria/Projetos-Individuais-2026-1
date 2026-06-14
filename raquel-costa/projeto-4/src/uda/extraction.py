@@ -77,6 +77,11 @@ _CONFIG = types.GenerateContentConfig(
 
 
 def _client() -> genai.Client:
+    if not GEMINI_API_KEY:
+        raise RuntimeError(
+            "GEMINI_API_KEY não configurada. Copie .env.example para .env e "
+            "preencha a chave (https://aistudio.google.com/apikey)."
+        )
     return genai.Client(api_key=GEMINI_API_KEY)
 
 

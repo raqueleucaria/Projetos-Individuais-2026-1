@@ -1,0 +1,50 @@
+[
+  {
+    "empresa": "Tenda",
+    "ano": 2025,
+    "trimestre": 3,
+    "indicador": "lancamentos",
+    "variante": null,
+    "unidade": "R$_milhoes",
+    "valor_absoluto": 1486.7,
+    "var_qoq": 36.5,
+    "var_yoy": -27.1,
+    "var_acumulado_aa": -4.2
+  },
+  {
+    "empresa": "Alea",
+    "ano": 2025,
+    "trimestre": 3,
+    "indicador": "lancamentos",
+    "variante": null,
+    "unidade": "R$_milhoes",
+    "valor_absoluto": 76.2,
+    "var_qoq": 259.1,
+    "var_yoy": -32.0,
+    "var_acumulado_aa": -37.5
+  },
+  {
+    "empresa": "Tenda",
+    "ano": 2025,
+    "trimestre": 3,
+    "indicador": "vendas",
+    "variante": null,
+    "unidade": "R$_milhoes",
+    "valor_absoluto": 1098.7,
+    "var_qoq": 4.5,
+    "var_yoy": -25.0,
+    "var_acumulado_aa": -3.7
+  },
+  {
+    "empresa": "Alea",
+    "ano": 2025,
+    "trimestre": 3,
+    "indicador": "vendas",
+    "variante": null,
+    "unidade": "R$_milhoes",
+    "valor_absoluto": 134.0,
+    "var_qoq": -7.4,
+    "var_yoy": 50.7,
+    "var_acumulado_aa": 34.5
+  }
+]

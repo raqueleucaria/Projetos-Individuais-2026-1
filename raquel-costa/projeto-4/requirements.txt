@@ -4,5 +4,6 @@ google-genai
 python-dotenv
 fastapi
 uvicorn[standard]
+pyyaml
 pytest
 httpx

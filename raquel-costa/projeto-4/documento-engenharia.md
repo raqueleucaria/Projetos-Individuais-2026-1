@@ -99,11 +99,18 @@ adaptador por portal — a estratégia completa está em
 Validado ao vivo: o coletor baixou uma Prévia real da internet e a processou; em
 nova passada do mesmo documento, retornou `ignorado` (idempotência).
 
+A **observação contínua** (enunciado, seção A) é feita por `src/uda/scheduler.py`,
+que roda o coletor em intervalo (ex: 1×/dia) sobre as fontes de
+`config/sources.yaml` (URLs diretas de PDF + descoberta em índices HTML). Em
+ambiente conteinerizado, o `docker-compose.yml` sobe a API e o scheduler como
+serviços separados, compartilhando o Catálogo via volume.
+
 ## 8. Limitações conhecidas e próximos passos
 
-- Resiliência validada com um 2º layout real (Prévia 3T25 da Cyrela, empresa
-  única com valores absolutos): pipeline processou ponta-a-ponta e populou
-  `valor_absoluto`. Diferenças e melhorias recomendadas (rótulo de empresa em
+- Resiliência validada com **3 layouts reais** — boletim agregado (só %),
+  Prévia da Cyrela (comunicado, empresa única) e Release de Resultados da Tenda
+  (29 páginas) — todos processados ponta-a-ponta, com `valor_absoluto` populado
+  nos dois últimos. Diferenças e melhorias recomendadas (rótulo de empresa em
   docs de emissor único, variantes com/ex-permuta, campo de unidade) em
   [`docs/planning/validacao-2-layout.md`](docs/planning/validacao-2-layout.md).
 - PDFs escaneados são cobertos pelo fallback Gemini Vision

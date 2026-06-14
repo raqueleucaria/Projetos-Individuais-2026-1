@@ -251,3 +251,22 @@ em todas as linhas, com `ex_permuta`/`permutas` e `unidade` separando
 `empreendimentos` de `R$_milhoes`. 30 testes passando.
 
 **Blocked by**: fase::6 validação com 2º layout.
+
+---
+
+### [fase::5] [type::feature] [priority::p1] [status::done] Scheduler + Docker + 3º layout (paridade)
+
+Itens de paridade/robustez após comparação com entregas de colegas.
+
+**Critérios de aceite:**
+- Scheduler de ingestão contínua (`scheduler.py`) lendo `config/sources.yaml`. ✅
+- Ambiente conteinerizado (`Dockerfile` + `docker-compose.yml`: API + scheduler). ✅
+- 3º layout real validado (Release de Resultados da Tenda) no benchmark. ✅
+
+**Resultado (2026-06-13)**: `scheduler.py` (ciclo + intervalo, fontes via YAML,
+`pyyaml`) + `test_scheduler.py`; `Dockerfile`/`docker-compose.yml` (build e API
+verificados em container); golden+snapshot da Tenda (`tenda_3T25`) com assert
+por PDF. Guard amigável quando falta `GEMINI_API_KEY`; `DB_PATH` configurável
+por env (volume Docker). 48 testes passando.
+
+**Blocked by**: coletor (fase::5), benchmark.

@@ -1,0 +1,14 @@
+# Fontes de ingestão do coletor/scheduler (enunciado, seção A).
+#
+# O scheduler (src/uda/scheduler.py) varre estas fontes em intervalo e dispara
+# o pipeline; a idempotência (hash) ignora documentos já processados.
+
+# URLs diretas de PDFs de Prévias Operacionais:
+fontes:
+  # Exemplo (Prévia Operacional 3T25 da Cyrela):
+  - https://api.mziq.com/mzfilemanager/v2/d/d7617e78-1c42-4341-83ae-a1faa8569ca8/fe009e66-226a-1006-2f78-b36ed822f94a?origin=1
+
+# Páginas de Central de Resultados (HTML estático) para descoberta de links .pdf.
+# Portais com lista via JavaScript exigem um adaptador por portal (ver
+# docs/planning/ingestao-polling.md).
+indices: []

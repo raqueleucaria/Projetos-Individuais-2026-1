@@ -10,9 +10,29 @@ são mapeadas aos critérios de avaliação do desafio.
 # Relatório (roda o pipeline real; baixa PDFs de terceiros sob demanda):
 PYTHONPATH=src python -m uda.benchmark
 
-# Testes determinísticos do medidor (sem LLM, no pytest padrão):
+# Asserts de qualidade separados por PDF (offline, via snapshot — rodam no CI):
+PYTHONPATH=src pytest tests/test_benchmark_qualidade.py -q
+
+# Testes determinísticos do medidor (sem LLM):
 PYTHONPATH=src pytest tests/test_benchmark_metrics.py -q
 ```
+
+## Separação por PDF e snapshots
+
+Os asserts são **separados por PDF**, conforme a `fonte` do golden:
+
+- **`boletim_3T25` (`fonte: data`)** — PDF versionado em `data/`. Roda no
+  benchmark ao vivo e tem assert offline no CI.
+- **`cyrela_3T25` (`fonte: externo`)** — PDF de terceiros que **não está em
+  `data/`**. No benchmark ao vivo é baixado sob demanda; nos testes do CI a
+  qualidade é checada contra um **snapshot** gravado em `benchmark/snapshots/`,
+  sem precisar do PDF.
+
+Cada `benchmark/snapshots/<nome>.json` é uma gravação de uma extração real; o
+assert compara golden × snapshot de forma determinística
+(`tests/test_benchmark_qualidade.py`). Regravar um snapshot que divergir do
+golden além da tolerância faz o teste falhar — sinalizando regressão. A deriva
+do LLM ao vivo é verificada rodando `python -m uda.benchmark`.
 
 ## Métricas
 
@@ -57,3 +77,14 @@ PYTHONPATH=src pytest tests/test_benchmark_metrics.py -q
   demanda). PDFs de terceiros não são versionados; entradas sem PDF disponível
   são puladas. Adicionar um novo layout é só incluir um JSON em
   `benchmark/golden/`.
+
+## 3º layout: Tenda (Release de Resultados)
+
+Adicionado um 3º PDF à verdade-base: `tenda_3T25` (`fonte: externo`) — Release de
+Resultados 3T25 da Tenda (29 páginas, earnings release). O pré-filtro seleciona
+as páginas relevantes do documento longo; a extração popula `valor_absoluto`
+(Tenda lançamentos R$ 1.487M, vendas R$ 1.099M — conferindo com fatos públicos)
+e também separa a submarca **Alea**. Assert por PDF em
+`tests/test_benchmark_qualidade.py` (cobertura/acurácia/disciplina-NULL via
+snapshot offline). Snapshot capturado com `gemini-flash-latest` (cota diária do
+`gemini-2.5-flash` esgotada no dia da captura).

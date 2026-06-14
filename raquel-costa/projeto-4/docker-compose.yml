@@ -1,0 +1,29 @@
+# Ambiente conteinerizado: API REST + scheduler de ingestão, compartilhando o
+# Catálogo SQLite via volume nomeado. Requer um arquivo .env (cp .env.example
+# .env e preencher GEMINI_API_KEY).
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - DB_PATH=/data/catalogo.db
+    volumes:
+      - uda-data:/data
+
+  scheduler:
+    build: .
+    env_file:
+      - .env
+    environment:
+      - DB_PATH=/data/catalogo.db
+      - SCHEDULER_INTERVALO_SEG=86400   # 1x/dia
+    volumes:
+      - uda-data:/data
+    command: python -m uda.scheduler
+
+volumes:
+  uda-data:
