@@ -1,0 +1,10 @@
+.git/
+.venv/
+.agents/
+.claude/
+__pycache__/
+*.pyc
+.env
+catalogo.db
+.pytest_cache/
+Arquivo/

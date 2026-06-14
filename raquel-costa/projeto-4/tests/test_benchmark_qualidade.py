@@ -5,17 +5,22 @@ com um snapshot gravado de extração real (`benchmark/snapshots/`). Assim:
 
 - **boletim_3T25** (`fonte: data`): PDF versionado em `data/` — também roda no
   benchmark ao vivo; aqui o snapshot garante o assert offline no CI.
-- **cyrela_3T25** (`fonte: externo`): PDF de terceiros que **não está em
-  `data/`** — o snapshot torna a qualidade testável no CI sem precisar do PDF.
+- **cyrela_3T25** e **tenda_3T25** (`fonte: externo`): PDFs de terceiros que
+  **não estão em `data/`** — o snapshot torna a qualidade testável no CI sem
+  precisar do PDF (3 layouts no total: boletim agregado, comunicado e release).
 
 Os asserts não chamam a API: usam o snapshot. A deriva do LLM ao vivo é
 verificada à parte rodando `python -m uda.benchmark`.
 """
 
-from uda.benchmark import avaliar, carregar_golden, carregar_snapshot
+import pytest
+
+from uda.benchmark import SNAPSHOT_DIR, avaliar, carregar_golden, carregar_snapshot
 
 
 def _avaliar(nome):
+    if not (SNAPSHOT_DIR / f"{nome}.json").exists():
+        pytest.skip(f"snapshot {nome} ausente (capture com 'python -m uda.benchmark')")
     golden = carregar_golden(nome)
     return golden, avaliar(golden["esperado"], carregar_snapshot(nome))
 
@@ -32,17 +37,18 @@ def test_boletim_data_qualidade_total():
     assert m.consistencia_temporal == 1.0
 
 
-# ── PDF 2: cyrela (fonte: externo, NÃO está em data/) ───────────────────────
+# ── PDFs 2 e 3: externos (NÃO estão em data/) — extração de valores absolutos ─
 
-def test_cyrela_externo_extrai_absolutos():
-    golden, m = _avaliar("cyrela_3T25")
+@pytest.mark.parametrize("nome", ["cyrela_3T25", "tenda_3T25"])
+def test_externo_extrai_absolutos(nome):
+    golden, m = _avaliar(nome)
     assert golden["fonte"] == "externo"
-    assert m.cobertura == 1.0          # achou os 3 âncoras de valor absoluto
+    assert m.cobertura == 1.0          # achou os âncoras de valor absoluto
     assert m.acuracia_numerica == 1.0  # absolutos/variações dentro da tolerância
     assert m.disciplina_null == 1.0
     # critério "extração de valores absolutos": todo esperado tem absoluto > 0
     snap = {(r["empresa"], r["indicador"], r.get("variante")): r
-            for r in carregar_snapshot("cyrela_3T25")}
+            for r in carregar_snapshot(nome)}
     for esp in golden["esperado"]:
         achado = snap[(esp["empresa"], esp["indicador"], esp.get("variante"))]
         assert achado["valor_absoluto"] and achado["valor_absoluto"] > 0

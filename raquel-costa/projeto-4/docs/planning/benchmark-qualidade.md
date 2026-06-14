@@ -77,3 +77,14 @@ do LLM ao vivo é verificada rodando `python -m uda.benchmark`.
   demanda). PDFs de terceiros não são versionados; entradas sem PDF disponível
   são puladas. Adicionar um novo layout é só incluir um JSON em
   `benchmark/golden/`.
+
+## 3º layout: Tenda (Release de Resultados)
+
+Adicionado um 3º PDF à verdade-base: `tenda_3T25` (`fonte: externo`) — Release de
+Resultados 3T25 da Tenda (29 páginas, earnings release). O pré-filtro seleciona
+as páginas relevantes do documento longo; a extração popula `valor_absoluto`
+(Tenda lançamentos R$ 1.487M, vendas R$ 1.099M — conferindo com fatos públicos)
+e também separa a submarca **Alea**. Assert por PDF em
+`tests/test_benchmark_qualidade.py` (cobertura/acurácia/disciplina-NULL via
+snapshot offline). Snapshot capturado com `gemini-flash-latest` (cota diária do
+`gemini-2.5-flash` esgotada no dia da captura).

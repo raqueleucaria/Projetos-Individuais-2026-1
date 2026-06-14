@@ -1,0 +1,10 @@
+{
+  "nome": "tenda_3T25",
+  "fonte": "externo",
+  "descricao": "Release de Resultados 3T25 da Tenda (TEND3) — documento extenso (29 páginas), layout de earnings release em prosa + tabelas, com valores absolutos em R$ milhões (Tenda e a submarca Alea). 3º layout, diferente do boletim agregado e do comunicado da Cyrela. PDF de terceiros NÃO versionado: baixado sob demanda (ri.tenda.com, link .pdf direto — também exercita a descoberta). Snapshot capturado com gemini-flash-latest (cota diária do gemini-2.5-flash esgotada no dia da captura); valores conferem com os fatos públicos (lançamentos R$ 1.487 bi, vendas líquidas R$ 1.099 bi).",
+  "pdf_url": "https://ri.tenda.com/docs/Press-release-Tenda-2025-09-30-mLkphKnR.pdf",
+  "esperado": [
+    {"empresa": "Tenda", "ano": 2025, "trimestre": 3, "indicador": "lancamentos", "variante": null, "unidade": "R$_milhoes", "valor_absoluto": 1487, "var_qoq": 36.5, "var_yoy": -27.1, "var_acumulado_aa": -4.2},
+    {"empresa": "Tenda", "ano": 2025, "trimestre": 3, "indicador": "vendas", "variante": null, "unidade": "R$_milhoes", "valor_absoluto": 1099, "var_qoq": 4.5, "var_yoy": -25.0, "var_acumulado_aa": -3.7}
+  ]
+}
