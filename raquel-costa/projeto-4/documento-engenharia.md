@@ -100,3 +100,14 @@ com cada indicador, permitindo rastrear de qual Prévia Operacional o dado veio.
   ([ADR-0006](docs/adr/0006-fallback-gemini-vision-para-pdfs-sem-texto.md)).
 - Gatilho de ingestão (polling) documentado, mas ainda não implementado
   ([`docs/planning/ingestao-polling.md`](docs/planning/ingestao-polling.md)).
+
+## 9. Benchmark de qualidade da leitura
+
+A qualidade da extração é medida contra uma verdade-base (golden) em
+`benchmark/golden/`, com métricas mapeadas aos critérios de avaliação
+(cobertura, precisão, acurácia numérica, disciplina de NULL, consistência
+temporal). No boletim de exemplo o pipeline atinge 100% em todas as métricas
+(inclusive `disciplina_null`, confirmando que não inventa absolutos); na Cyrela,
+os valores absolutos são extraídos corretamente. Medidor testado de forma
+determinística em `tests/test_benchmark_metrics.py`. Detalhes e resultados em
+[`docs/planning/benchmark-qualidade.md`](docs/planning/benchmark-qualidade.md).
