@@ -124,6 +124,29 @@ docker compose up --build          # sobe API (porta 8000) + scheduler
 > `gemini-flash-latest`). Os passos que **não** chamam o LLM (testes, API sobre
 > banco já populado) seguem funcionando.
 
+## API — endpoints
+
+`GET /api/conjuntura` — lista os indicadores do Catálogo, com filtros opcionais
+(combináveis). Cada item inclui `url_origem` (**Linhagem**).
+
+| Parâmetro | Tipo | Exemplo |
+|---|---|---|
+| `empresa` | str | `MRV` |
+| `ano` | int | `2025` |
+| `trimestre` | int (1–4) | `3` |
+| `variante` | str | `ex_permuta` |
+| `unidade` | str | `R$_milhoes` |
+
+```
+GET /api/conjuntura                                   # todos os indicadores
+GET /api/conjuntura?empresa=MRV&ano=2025&trimestre=3  # filtrado
+GET /docs                                             # Swagger UI (interativo)
+GET /openapi.json                                     # schema OpenAPI
+```
+
+> A raiz `/` não tem rota e retorna `404 {"detail":"Not Found"}` **por design** —
+> use `/api/conjuntura` ou `/docs`. No navegador, prefira `http://127.0.0.1:8000/docs`.
+
 ## CI
 
 O workflow [`.github/workflows/projeto-4-ci.yml`](../../.github/workflows/projeto-4-ci.yml)
@@ -131,29 +154,59 @@ roda a suíte a cada push/PR que toca `raquel-costa/projeto-4/**`. Os testes sã
 **offline** (sem `GEMINI_API_KEY`): a extração via LLM não é exercitada nos
 testes e o benchmark é checado contra snapshots gravados.
 
+## Evidências
+
+Execução local do pipeline ponta-a-ponta (ver [Como rodar](#como-rodar-do-zero)):
+
+**Testes — 48 passando (offline, sem chave)**
+![Testes](docs/img/testes.png)
+
+**Pipeline — extração do PDF de exemplo**
+![Pipeline](docs/img/pipeline.png)
+
+**API REST — consulta filtrada com Linhagem (`url_origem`)**
+![API REST](docs/img/api-rest.png)
+
+**Qualidade da leitura por PDF — 3 layouts (boletim, Cyrela, Tenda)**
+![Benchmark de qualidade](docs/img/benchmark.png)
+
+**Docker — API + scheduler (ingestão automática + idempotência)**
+![Docker](docs/img/docker.png)
+
 ## Estratégias de melhoria da leitura
 
-Sobre o MVP, estas estratégias elevam a **qualidade e a resiliência** da extração:
+Sobre o MVP, estas estratégias elevam a **qualidade e a resiliência** da
+extração. Cada uma é detalhada na sua decisão de arquitetura (ADR):
 
-1. **Pré-filtro de páginas + extração table-aware** (ADR-0001): só as páginas
-   relevantes (por palavras-chave) são enviadas ao LLM, e suas **tabelas vão em
-   Markdown** (`find_tables()`) em vez de texto plano — preservando o alinhamento
-   empresa↔valor e reduzindo erros de associação/alucinação.
-2. **Saída estruturada + geração determinística** (ADR-0002): `response_schema`
-   Pydantic garante JSON válido conforme o contrato; `temperature=0.0` e
-   `thinking_budget=0` deixam a extração reprodutível e mais barata.
-3. **Contrato que cobre absolutos e percentuais com NULL** (ADR-0005): o prompt
-   blinda o banco — campos ausentes viram `NULL`, sem inventar valores.
-4. **Campos `variante` e `unidade`** (ADR-0007): desambiguam recortes do mesmo
-   indicador (com/ex-permuta) e a unidade de `valor_absoluto` (R$ milhões,
-   unidades, empreendimentos), e generalizam o rótulo de empresa.
-5. **Validação semântica pós-LLM** (`validation.py`): sinaliza linhas suspeitas
-   (sem nenhum valor, variação implausível, empresa vazia, ano improvável).
-6. **Fallback Gemini Vision** (ADR-0006): PDFs sem camada de texto (escaneados)
-   são renderizados como imagem e enviados ao mesmo `response_schema`.
-7. **Benchmark de qualidade** (`benchmark/`): mede a leitura contra uma
-   verdade-base (cobertura, precisão, disciplina de NULL, acurácia) — boletim
-   100% em todas as métricas; Cyrela e Tenda com absolutos corretos.
+1. **Pré-filtro de páginas + extração table-aware**
+   ([ADR-0001](docs/adr/0001-pre-filtro-de-paginas-antes-da-llm.md)): só as
+   páginas relevantes (por palavras-chave) são enviadas ao LLM, e suas
+   **tabelas vão em Markdown** (`find_tables()`) em vez de texto plano —
+   preservando o alinhamento empresa↔valor e reduzindo erros de associação.
+2. **Saída estruturada + geração determinística**
+   ([ADR-0002](docs/adr/0002-gemini-flash-com-saida-estruturada.md)):
+   `response_schema` Pydantic garante JSON válido conforme o contrato;
+   `temperature=0.0` e `thinking_budget=0` deixam a extração reprodutível.
+3. **Contrato cobre absolutos e percentuais com NULL**
+   ([ADR-0005](docs/adr/0005-contrato-cobre-absolutos-e-percentuais-com-null.md)):
+   o prompt blinda o banco — campos ausentes viram `NULL`, sem inventar valores.
+4. **Campos `variante` e `unidade`**
+   ([ADR-0007](docs/adr/0007-variante-e-unidade-no-contrato.md)): desambiguam
+   recortes do mesmo indicador (com/ex-permuta) e a unidade de `valor_absoluto`
+   (R$ milhões, unidades, empreendimentos), e generalizam o rótulo de empresa.
+5. **Validação semântica pós-LLM** (`src/uda/validation.py`): sinaliza linhas
+   suspeitas (sem nenhum valor, variação implausível, empresa vazia, ano improvável).
+6. **Fallback Gemini Vision**
+   ([ADR-0006](docs/adr/0006-fallback-gemini-vision-para-pdfs-sem-texto.md)):
+   PDFs sem camada de texto (escaneados) viram imagem + mesmo `response_schema`.
+7. **Benchmark de qualidade**
+   ([`docs/planning/benchmark-qualidade.md`](docs/planning/benchmark-qualidade.md)):
+   mede a leitura contra uma verdade-base — boletim 100% em todas as métricas;
+   Cyrela e Tenda com absolutos corretos.
+
+> Decisões completas em [`docs/adr/`](docs/adr/) (ADRs 0001–0007); contexto e
+> planejamento em [`docs/planning/`](docs/planning/) e
+> [`documento-engenharia.md`](documento-engenharia.md).
 
 ## O que está entregue
 
