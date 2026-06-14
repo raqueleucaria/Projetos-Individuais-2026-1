@@ -1,0 +1,21 @@
+{
+  "nome": "boletim_3T25",
+  "descricao": "Boletim de Conjuntura 3T25 — agregado de 6 empresas, só percentuais. var_qoq=X2T25, var_yoy=X3T24, var_acumulado_aa=9m25/24 (a coluna 9m24/23 não é modelada). valor_absoluto sempre NULL.",
+  "pdf_path": "data/exemplo_Boletim_Conjuntura_2025_3T.pdf",
+  "esperado": [
+    {"empresa": "MRV", "ano": 2025, "trimestre": 3, "indicador": "lancamentos", "variante": null, "unidade": null, "valor_absoluto": null, "var_qoq": -32, "var_yoy": -19, "var_acumulado_aa": 20},
+    {"empresa": "Cury", "ano": 2025, "trimestre": 3, "indicador": "lancamentos", "variante": null, "unidade": null, "valor_absoluto": null, "var_qoq": 3, "var_yoy": 32, "var_acumulado_aa": 35},
+    {"empresa": "Tenda", "ano": 2025, "trimestre": 3, "indicador": "lancamentos", "variante": null, "unidade": null, "valor_absoluto": null, "var_qoq": 31, "var_yoy": -33, "var_acumulado_aa": -11},
+    {"empresa": "Plano & Plano", "ano": 2025, "trimestre": 3, "indicador": "lancamentos", "variante": null, "unidade": null, "valor_absoluto": null, "var_qoq": 207, "var_yoy": 101, "var_acumulado_aa": 46},
+    {"empresa": "Direcional", "ano": 2025, "trimestre": 3, "indicador": "lancamentos", "variante": null, "unidade": null, "valor_absoluto": null, "var_qoq": 27, "var_yoy": 8, "var_acumulado_aa": 21},
+    {"empresa": "Pacaembu", "ano": 2025, "trimestre": 3, "indicador": "lancamentos", "variante": null, "unidade": null, "valor_absoluto": null, "var_qoq": 6, "var_yoy": 84, "var_acumulado_aa": 48},
+    {"empresa": "TOTAL_SETOR", "ano": 2025, "trimestre": 3, "indicador": "lancamentos", "variante": null, "unidade": null, "valor_absoluto": null, "var_qoq": 14, "var_yoy": 9, "var_acumulado_aa": 23},
+    {"empresa": "MRV", "ano": 2025, "trimestre": 3, "indicador": "vendas", "variante": null, "unidade": null, "valor_absoluto": null, "var_qoq": -12, "var_yoy": -10, "var_acumulado_aa": -5},
+    {"empresa": "Cury", "ano": 2025, "trimestre": 3, "indicador": "vendas", "variante": null, "unidade": null, "valor_absoluto": null, "var_qoq": -15, "var_yoy": 32, "var_acumulado_aa": 27},
+    {"empresa": "Tenda", "ano": 2025, "trimestre": 3, "indicador": "vendas", "variante": null, "unidade": null, "valor_absoluto": null, "var_qoq": 4, "var_yoy": -19, "var_acumulado_aa": -1},
+    {"empresa": "Plano & Plano", "ano": 2025, "trimestre": 3, "indicador": "vendas", "variante": null, "unidade": null, "valor_absoluto": null, "var_qoq": 13, "var_yoy": -36, "var_acumulado_aa": -13},
+    {"empresa": "Direcional", "ano": 2025, "trimestre": 3, "indicador": "vendas", "variante": null, "unidade": null, "valor_absoluto": null, "var_qoq": -6, "var_yoy": -23, "var_acumulado_aa": -10},
+    {"empresa": "Pacaembu", "ano": 2025, "trimestre": 3, "indicador": "vendas", "variante": null, "unidade": null, "valor_absoluto": null, "var_qoq": 43, "var_yoy": 97, "var_acumulado_aa": 47},
+    {"empresa": "TOTAL_SETOR", "ano": 2025, "trimestre": 3, "indicador": "vendas", "variante": null, "unidade": null, "valor_absoluto": null, "var_qoq": -1, "var_yoy": -5, "var_acumulado_aa": 4}
+  ]
+}

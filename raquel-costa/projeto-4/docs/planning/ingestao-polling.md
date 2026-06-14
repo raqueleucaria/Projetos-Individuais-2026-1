@@ -74,6 +74,20 @@ Consequências dessa delegação:
 - **Reexecução segura.** Rodar o coletor várias vezes ao dia (ou após uma
   falha parcial) não duplica dados.
 
+## Implementação (`src/uda/coletor.py`)
+
+O coletor implementa esta estratégia em dois níveis:
+
+- **Nível 1 — `coletar(fontes)`**: lista configurável de URLs de PDF → baixa →
+  `processar_pdf` (idempotente). É o laço automatizável por polling/cron.
+- **Descoberta (nível 2) — `extrair_links_pdf(html)` / `descobrir_pdfs(url)`**:
+  extrai links `.pdf` de uma Central de Resultados em HTML estático.
+
+Portais que carregam a lista via JavaScript, ou que usam links sem extensão
+`.pdf` (ex: `filemanager`), precisam de um **adaptador por portal** (HTTP da API
+interna ou navegador headless) — fora do escopo do MVP, mas conectável ao
+`coletar`.
+
 ## Fora de escopo no MVP
 
 - Implementação do coletor/cron em si.

@@ -1,0 +1,10 @@
+{
+  "nome": "cyrela_3T25",
+  "descricao": "Prévia Operacional 3T25 da Cyrela (CYRE3) — empresa única, prosa + tabelas, com valores absolutos em R$ milhões. PDF de terceiros: não versionado, baixado sob demanda pela URL. Exercita a extração de valores absolutos e o campo variante (com/ex-permuta).",
+  "pdf_url": "https://api.mziq.com/mzfilemanager/v2/d/d7617e78-1c42-4341-83ae-a1faa8569ca8/fe009e66-226a-1006-2f78-b36ed822f94a?origin=1",
+  "esperado": [
+    {"empresa": "Cyrela Brazil Realty", "ano": 2025, "trimestre": 3, "indicador": "lancamentos", "variante": null, "unidade": "R$_milhoes", "valor_absoluto": 5050, "var_qoq": 22, "var_yoy": 62, "var_acumulado_aa": 123},
+    {"empresa": "Cyrela Brazil Realty", "ano": 2025, "trimestre": 3, "indicador": "lancamentos", "variante": "ex_permuta", "unidade": "R$_milhoes", "valor_absoluto": 3411, "var_qoq": 19, "var_yoy": 38, "var_acumulado_aa": 105},
+    {"empresa": "Cyrela Brazil Realty", "ano": 2025, "trimestre": 3, "indicador": "vendas", "variante": "ex_permuta", "unidade": "R$_milhoes", "valor_absoluto": 2459, "var_qoq": 10, "var_yoy": 0, "var_acumulado_aa": 19}
+  ]
+}

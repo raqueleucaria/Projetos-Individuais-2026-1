@@ -85,9 +85,19 @@ um com `url_origem` apontando para o PDF de origem.
 Essa referência é a Linhagem: toda consulta à API carrega `url_origem` junto
 com cada indicador, permitindo rastrear de qual Prévia Operacional o dado veio.
 
-## 7. Gatilho de ingestão (próximos passos)
+## 7. Gatilho de ingestão
 
-(Ver [`docs/planning/00-overview.md`](docs/planning/00-overview.md).)
+`src/uda/coletor.py` implementa o gatilho em dois níveis. **Nível 1**
+(`coletar`): dada uma lista de fontes (URLs de PDFs), baixa cada um e chama
+`processar_pdf`, reaproveitando a Idempotência (hash) — um PDF já processado é
+ignorado sem custo de LLM; é o caminho automatizável por polling/cron.
+**Descoberta (nível 2)** (`extrair_links_pdf`): encontra links de PDF numa
+página de Central de Resultados servida como HTML estático. Portais com lista
+via JavaScript ou links sem extensão `.pdf` (ex: filemanager) exigem um
+adaptador por portal — a estratégia completa está em
+[`docs/planning/ingestao-polling.md`](docs/planning/ingestao-polling.md).
+Validado ao vivo: o coletor baixou uma Prévia real da internet e a processou; em
+nova passada do mesmo documento, retornou `ignorado` (idempotência).
 
 ## 8. Limitações conhecidas e próximos passos
 
@@ -100,3 +110,14 @@ com cada indicador, permitindo rastrear de qual Prévia Operacional o dado veio.
   ([ADR-0006](docs/adr/0006-fallback-gemini-vision-para-pdfs-sem-texto.md)).
 - Gatilho de ingestão (polling) documentado, mas ainda não implementado
   ([`docs/planning/ingestao-polling.md`](docs/planning/ingestao-polling.md)).
+
+## 9. Benchmark de qualidade da leitura
+
+A qualidade da extração é medida contra uma verdade-base (golden) em
+`benchmark/golden/`, com métricas mapeadas aos critérios de avaliação
+(cobertura, precisão, acurácia numérica, disciplina de NULL, consistência
+temporal). No boletim de exemplo o pipeline atinge 100% em todas as métricas
+(inclusive `disciplina_null`, confirmando que não inventa absolutos); na Cyrela,
+os valores absolutos são extraídos corretamente. Medidor testado de forma
+determinística em `tests/test_benchmark_metrics.py`. Detalhes e resultados em
+[`docs/planning/benchmark-qualidade.md`](docs/planning/benchmark-qualidade.md).

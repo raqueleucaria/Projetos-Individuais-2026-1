@@ -149,6 +149,23 @@ um com `url_origem`. Testes em `tests/test_api.py`.
 
 ---
 
+### [fase::5] [type::feature] [priority::p1] [status::done] Coletor de ingestão (implementação)
+
+Implementação do gatilho de ingestão (`src/uda/coletor.py`).
+
+**Critérios de aceite:**
+- `coletar(fontes)` baixa cada PDF e chama `processar_pdf` (idempotente). ✅
+- Descoberta `extrair_links_pdf(html)` acha links de PDF em HTML estático. ✅
+- Testes sem rede/LLM (`tests/test_coletor.py`) + demo e2e ao vivo. ✅
+
+**Resultado (2026-06-13)**: nível 1 (lista de fontes → download → pipeline
+idempotente) + descoberta nível 2 para HTML estático. Validado ao vivo: baixou
+uma Prévia real da internet e processou; 2ª passada do mesmo doc → `ignorado`.
+Scraping de portais JS reais fica documentado como adaptador por portal
+(`ingestao-polling.md`). 4 testes (mock de rede/LLM).
+
+---
+
 ### [fase::5] [type::feature] [priority::p1] [status::done] Documentar gatilho de ingestão (polling) como próximo passo
 
 Seção em `docs/planning/00-overview.md` (ou novo doc) descrevendo a estratégia
