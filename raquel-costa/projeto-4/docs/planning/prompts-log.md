@@ -121,3 +121,18 @@ Re-validado nos 2 PDFs com a API real: boletim de exemplo mantém 14 linhas e
 `TOTAL_SETOR` correto (variante/unidade NULL, retrocompatível); Cyrela passa a
 rotular "Cyrela Brazil Realty" em todas as linhas, com `ex_permuta`/`permutas`
 e `unidade` distinguindo `empreendimentos` de `R$_milhoes`. 30 testes passando.
+
+## 2026-06-13 — Benchmark de qualidade, coletor de ingestão e CI
+
+- **Benchmark de qualidade** (`src/uda/benchmark.py` + `benchmark/golden/`):
+  mede a leitura contra uma verdade-base (cobertura, precisão, acurácia,
+  disciplina de NULL, temporal). Medidor testado de forma determinística (sem
+  LLM). Boletim 100% em todas as métricas; Cyrela com absolutos corretos.
+- **Coletor de ingestão** (`src/uda/coletor.py`): nível 1 (fontes → download →
+  `processar_pdf` idempotente) + descoberta nível 2 (`extrair_links_pdf` em HTML
+  estático). Validado ao vivo (baixou Prévia real → processou → 2ª passada
+  `ignorado`). Implementa a `fase::5`.
+- **CI** (`.github/workflows/projeto-4-ci.yml`): roda a suíte a cada push/PR que
+  toca `raquel-costa/projeto-4/**`; testes offline (sem `GEMINI_API_KEY`).
+
+41 testes passando.

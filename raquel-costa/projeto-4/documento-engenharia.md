@@ -85,9 +85,19 @@ um com `url_origem` apontando para o PDF de origem.
 Essa referência é a Linhagem: toda consulta à API carrega `url_origem` junto
 com cada indicador, permitindo rastrear de qual Prévia Operacional o dado veio.
 
-## 7. Gatilho de ingestão (próximos passos)
+## 7. Gatilho de ingestão
 
-(Ver [`docs/planning/00-overview.md`](docs/planning/00-overview.md).)
+`src/uda/coletor.py` implementa o gatilho em dois níveis. **Nível 1**
+(`coletar`): dada uma lista de fontes (URLs de PDFs), baixa cada um e chama
+`processar_pdf`, reaproveitando a Idempotência (hash) — um PDF já processado é
+ignorado sem custo de LLM; é o caminho automatizável por polling/cron.
+**Descoberta (nível 2)** (`extrair_links_pdf`): encontra links de PDF numa
+página de Central de Resultados servida como HTML estático. Portais com lista
+via JavaScript ou links sem extensão `.pdf` (ex: filemanager) exigem um
+adaptador por portal — a estratégia completa está em
+[`docs/planning/ingestao-polling.md`](docs/planning/ingestao-polling.md).
+Validado ao vivo: o coletor baixou uma Prévia real da internet e a processou; em
+nova passada do mesmo documento, retornou `ignorado` (idempotência).
 
 ## 8. Limitações conhecidas e próximos passos
 
